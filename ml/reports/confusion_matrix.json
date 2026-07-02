@@ -1,0 +1,22 @@
+{
+  "source": "live",
+  "model_name": "xgboost",
+  "split": "test",
+  "threshold": 0.06060992181301117,
+  "matrix": [
+    [
+      44931,
+      24
+    ],
+    [
+      37,
+      9
+    ]
+  ],
+  "rows": "actual",
+  "cols": "predicted",
+  "labels": [
+    "benign",
+    "laundering"
+  ]
+}

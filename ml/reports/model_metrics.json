@@ -1,0 +1,49 @@
+{
+  "source": "live",
+  "model_name": "xgboost",
+  "leaderboard": [
+    {
+      "model": "logistic_regression",
+      "val_pr_auc": 0.024410696810906646,
+      "val_roc_auc": 0.951934339150359,
+      "val_f1": 0.07317073170731707,
+      "val_threshold": 0.9970122289062152,
+      "fit_seconds": 4.104033708572388
+    },
+    {
+      "model": "random_forest",
+      "val_pr_auc": 0.1355978235008127,
+      "val_roc_auc": 0.9109301599061436,
+      "val_f1": 0.2692307692307692,
+      "val_threshold": 0.13491549988334975,
+      "fit_seconds": 13.718599081039429
+    },
+    {
+      "model": "xgboost",
+      "val_pr_auc": 0.22710153390789076,
+      "val_roc_auc": 0.9696833117487926,
+      "val_f1": 0.29545454545454547,
+      "val_threshold": 0.06060992181301117,
+      "fit_seconds": 4.323415517807007
+    }
+  ],
+  "split": "test",
+  "threshold": 0.06060992181301117,
+  "pr_auc": 0.227455635838831,
+  "roc_auc": 0.9516260221574232,
+  "precision": 0.2727272727272727,
+  "recall": 0.1956521739130435,
+  "f1": 0.2278481012658228,
+  "fpr": 0.0005338672005338672,
+  "n_alerts": 33,
+  "n_confirmed_laundering": 9,
+  "n_total": 45001,
+  "n_positive": 46,
+  "prevalence": 0.0010221995066776294,
+  "trained_seconds": 24.04680585861206,
+  "sample": 300000,
+  "input": "ml\\data\\features\\train_features.parquet",
+  "n_train": 210000,
+  "n_val": 44999,
+  "n_test": 45001
+}

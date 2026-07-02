@@ -1,0 +1,337 @@
+{
+  "source": "live",
+  "phase": "ml-evaluation-1",
+  "generated_at": "2026-06-13T10:08:06Z",
+  "dataset": "AMLworld HI-Small (synthetic) \u2014 research benchmark, not production validation.",
+  "model": "random_forest",
+  "leakage_note": "All graph/context features are point-in-time (strictly-before cumulative and trailing-window semantics from ml/scripts/build_graph_features.py); no feature uses future transactions. Live feature-store context (backend /api/features) remains online-only; these offline equivalents follow the same point-in-time discipline.",
+  "account_id_note": "full_with_account_ids adds account-identifier encodings as used by the deployed baseline. Lift over graph_context is attributable to account-identity memorisation and would not transfer to unseen accounts.",
+  "feature_sets": [
+    {
+      "feature_set": "transaction_only",
+      "description": "Amount, currency/payment-format encodings, bank ids, cross-bank flags, time-of-day fields.",
+      "n_features": 10,
+      "features": [
+        "amount",
+        "currency_enc",
+        "payment_type_enc",
+        "source_bank_enc",
+        "target_bank_enc",
+        "is_cross_bank",
+        "cross_bank_flow_flag",
+        "hour",
+        "day_of_week",
+        "is_weekend"
+      ],
+      "fit_seconds": 44.58,
+      "val": {
+        "threshold": 0.08988808867453604,
+        "pr_auc": 0.016586416185121994,
+        "roc_auc": 0.8153199675491969,
+        "precision": 0.05154639175257732,
+        "recall": 0.07236842105263158,
+        "f1": 0.060207991242474,
+        "fpr": 0.0013298466471307114,
+        "n_alerts": 1067,
+        "n_confirmed_laundering": 55,
+        "n_total": 761750,
+        "n_positive": 760,
+        "prevalence": 0.0009977026583524778,
+        "confusion_matrix": [
+          [
+            759978,
+            1012
+          ],
+          [
+            705,
+            55
+          ]
+        ],
+        "alerts_per_100k": 140.07
+      },
+      "test": {
+        "threshold": 0.08988808867453604,
+        "pr_auc": 0.07659754790556354,
+        "roc_auc": 0.8854459026768646,
+        "precision": 0.13731060606060605,
+        "recall": 0.18577834721332478,
+        "f1": 0.15790906615845357,
+        "fpr": 0.0023967692287454453,
+        "n_alerts": 2112,
+        "n_confirmed_laundering": 290,
+        "n_total": 761751,
+        "n_positive": 1561,
+        "prevalence": 0.0020492260594341194,
+        "confusion_matrix": [
+          [
+            758368,
+            1822
+          ],
+          [
+            1271,
+            290
+          ]
+        ],
+        "alerts_per_100k": 277.26
+      },
+      "test_pr_auc_delta_vs_transaction_only": 0.0
+    },
+    {
+      "feature_set": "graph",
+      "description": "transaction_only + point-in-time degree/history features (counts, sums, unique counterparties, fan-in/fan-out scores).",
+      "n_features": 18,
+      "features": [
+        "amount",
+        "currency_enc",
+        "payment_type_enc",
+        "source_bank_enc",
+        "target_bank_enc",
+        "is_cross_bank",
+        "cross_bank_flow_flag",
+        "hour",
+        "day_of_week",
+        "is_weekend",
+        "source_out_tx_count_total_before",
+        "source_out_amount_sum_total_before",
+        "source_unique_targets_total_before",
+        "target_in_tx_count_total_before",
+        "target_in_amount_sum_total_before",
+        "target_unique_sources_total_before",
+        "fan_in_score",
+        "fan_out_score"
+      ],
+      "fit_seconds": 64.79,
+      "val": {
+        "threshold": 0.09994567468701038,
+        "pr_auc": 0.1114634386320408,
+        "roc_auc": 0.9060277479612776,
+        "precision": 0.20176730486008837,
+        "recall": 0.18026315789473685,
+        "f1": 0.19041000694927035,
+        "fpr": 0.0007122301212893731,
+        "n_alerts": 679,
+        "n_confirmed_laundering": 137,
+        "n_total": 761750,
+        "n_positive": 760,
+        "prevalence": 0.0009977026583524778,
+        "confusion_matrix": [
+          [
+            760448,
+            542
+          ],
+          [
+            623,
+            137
+          ]
+        ],
+        "alerts_per_100k": 89.14
+      },
+      "test": {
+        "threshold": 0.09994567468701038,
+        "pr_auc": 0.17895994262743342,
+        "roc_auc": 0.9328075273234695,
+        "precision": 0.25220588235294117,
+        "recall": 0.21973094170403587,
+        "f1": 0.23485107839780897,
+        "fpr": 0.001337823438877123,
+        "n_alerts": 1360,
+        "n_confirmed_laundering": 343,
+        "n_total": 761751,
+        "n_positive": 1561,
+        "prevalence": 0.0020492260594341194,
+        "confusion_matrix": [
+          [
+            759173,
+            1017
+          ],
+          [
+            1218,
+            343
+          ]
+        ],
+        "alerts_per_100k": 178.54
+      },
+      "test_pr_auc_delta_vs_transaction_only": 0.1024
+    },
+    {
+      "feature_set": "graph_context",
+      "description": "graph + point-in-time context features (1h/24h rolling windows, account-pair first-seen history, sweep ratio, rapid-movement flag).",
+      "n_features": 30,
+      "features": [
+        "amount",
+        "currency_enc",
+        "payment_type_enc",
+        "source_bank_enc",
+        "target_bank_enc",
+        "is_cross_bank",
+        "cross_bank_flow_flag",
+        "hour",
+        "day_of_week",
+        "is_weekend",
+        "source_out_tx_count_total_before",
+        "source_out_amount_sum_total_before",
+        "source_unique_targets_total_before",
+        "target_in_tx_count_total_before",
+        "target_in_amount_sum_total_before",
+        "target_unique_sources_total_before",
+        "fan_in_score",
+        "fan_out_score",
+        "source_out_tx_count_1h",
+        "source_out_amount_sum_1h",
+        "target_in_tx_count_1h",
+        "target_in_amount_sum_1h",
+        "source_out_tx_count_24h",
+        "source_out_amount_sum_24h",
+        "target_in_tx_count_24h",
+        "target_in_amount_sum_24h",
+        "account_pair_tx_count_before",
+        "account_pair_amount_sum_before",
+        "sweep_ratio",
+        "rapid_movement_flag"
+      ],
+      "fit_seconds": 80.15,
+      "val": {
+        "threshold": 0.13491464256120028,
+        "pr_auc": 0.35866970272912524,
+        "roc_auc": 0.943842574181416,
+        "precision": 0.42613636363636365,
+        "recall": 0.39473684210526316,
+        "f1": 0.4098360655737705,
+        "fpr": 0.0005308873966806397,
+        "n_alerts": 704,
+        "n_confirmed_laundering": 300,
+        "n_total": 761750,
+        "n_positive": 760,
+        "prevalence": 0.0009977026583524778,
+        "confusion_matrix": [
+          [
+            760586,
+            404
+          ],
+          [
+            460,
+            300
+          ]
+        ],
+        "alerts_per_100k": 92.42
+      },
+      "test": {
+        "threshold": 0.13491464256120028,
+        "pr_auc": 0.5548008078184025,
+        "roc_auc": 0.9694336838427703,
+        "precision": 0.555858310626703,
+        "recall": 0.5227418321588725,
+        "f1": 0.5387916804225816,
+        "fpr": 0.0008576803167629145,
+        "n_alerts": 1468,
+        "n_confirmed_laundering": 816,
+        "n_total": 761751,
+        "n_positive": 1561,
+        "prevalence": 0.0020492260594341194,
+        "confusion_matrix": [
+          [
+            759538,
+            652
+          ],
+          [
+            745,
+            816
+          ]
+        ],
+        "alerts_per_100k": 192.71
+      },
+      "test_pr_auc_delta_vs_transaction_only": 0.4782
+    },
+    {
+      "feature_set": "full_with_account_ids",
+      "description": "graph_context + account-identifier encodings (as used by the deployed baseline; flags identity-memorisation lift).",
+      "n_features": 32,
+      "features": [
+        "amount",
+        "currency_enc",
+        "payment_type_enc",
+        "source_bank_enc",
+        "target_bank_enc",
+        "is_cross_bank",
+        "cross_bank_flow_flag",
+        "hour",
+        "day_of_week",
+        "is_weekend",
+        "source_out_tx_count_total_before",
+        "source_out_amount_sum_total_before",
+        "source_unique_targets_total_before",
+        "target_in_tx_count_total_before",
+        "target_in_amount_sum_total_before",
+        "target_unique_sources_total_before",
+        "fan_in_score",
+        "fan_out_score",
+        "source_out_tx_count_1h",
+        "source_out_amount_sum_1h",
+        "target_in_tx_count_1h",
+        "target_in_amount_sum_1h",
+        "source_out_tx_count_24h",
+        "source_out_amount_sum_24h",
+        "target_in_tx_count_24h",
+        "target_in_amount_sum_24h",
+        "account_pair_tx_count_before",
+        "account_pair_amount_sum_before",
+        "sweep_ratio",
+        "rapid_movement_flag",
+        "source_account_enc",
+        "target_account_enc"
+      ],
+      "fit_seconds": 144.08,
+      "val": {
+        "threshold": 0.12494678609148567,
+        "pr_auc": 0.38595251878069875,
+        "roc_auc": 0.9374660682656455,
+        "precision": 0.431266846361186,
+        "recall": 0.42105263157894735,
+        "f1": 0.426098535286285,
+        "fpr": 0.0005545407955426484,
+        "n_alerts": 742,
+        "n_confirmed_laundering": 320,
+        "n_total": 761750,
+        "n_positive": 760,
+        "prevalence": 0.0009977026583524778,
+        "confusion_matrix": [
+          [
+            760568,
+            422
+          ],
+          [
+            440,
+            320
+          ]
+        ],
+        "alerts_per_100k": 97.41
+      },
+      "test": {
+        "threshold": 0.12494678609148567,
+        "pr_auc": 0.5739926220170071,
+        "roc_auc": 0.9657719336476275,
+        "precision": 0.5742372881355933,
+        "recall": 0.5426008968609866,
+        "f1": 0.5579710144927537,
+        "fpr": 0.0008261092621581447,
+        "n_alerts": 1475,
+        "n_confirmed_laundering": 847,
+        "n_total": 761751,
+        "n_positive": 1561,
+        "prevalence": 0.0020492260594341194,
+        "confusion_matrix": [
+          [
+            759562,
+            628
+          ],
+          [
+            714,
+            847
+          ]
+        ],
+        "alerts_per_100k": 193.63
+      },
+      "test_pr_auc_delta_vs_transaction_only": 0.4974
+    }
+  ]
+}

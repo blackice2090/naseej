@@ -1,0 +1,47 @@
+{
+  "source": "live",
+  "phase": "ml-evaluation-1",
+  "generated_at": "2026-06-13T10:01:20Z",
+  "dataset": "AMLworld HI-Small (synthetic) \u2014 research benchmark, not production validation.",
+  "model": "random_forest",
+  "split": "test",
+  "selection_note": "Thresholds are selected on the validation split and frozen before touching test.",
+  "thresholds": [
+    {
+      "mode": "high_precision",
+      "selection": "maximizes F0.5 on validation",
+      "recommended_use": "Compliance escalation \u2014 few, high-confidence alerts for SAR-style review.",
+      "threshold": 0.2349175307838802,
+      "precision": 0.8200899550224887,
+      "recall": 0.350416399743754,
+      "f1": 0.4910233393177738,
+      "fpr": 0.0001578552730238493,
+      "n_alerts": 667,
+      "alerts_per_100k": 87.56
+    },
+    {
+      "mode": "balanced",
+      "selection": "maximizes F1 on validation",
+      "recommended_use": "Analyst queue \u2014 day-to-day triage balance between precision and recall.",
+      "threshold": 0.12494678609148567,
+      "precision": 0.5742372881355933,
+      "recall": 0.5426008968609866,
+      "f1": 0.5579710144927537,
+      "fpr": 0.0008261092621581447,
+      "n_alerts": 1475,
+      "alerts_per_100k": 193.63
+    },
+    {
+      "mode": "high_recall",
+      "selection": "maximizes F2 on validation",
+      "recommended_use": "Monitoring only \u2014 broad watchlist; too noisy for direct escalation.",
+      "threshold": 0.07993665633478336,
+      "precision": 0.4085173501577287,
+      "recall": 0.6636771300448431,
+      "f1": 0.5057359043202344,
+      "fpr": 0.0019731909127981163,
+      "n_alerts": 2536,
+      "alerts_per_100k": 332.92
+    }
+  ]
+}

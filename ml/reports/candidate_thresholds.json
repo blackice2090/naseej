@@ -1,0 +1,75 @@
+{
+  "source": "live",
+  "phase": "candidate-shadow-1",
+  "generated_at": "2026-06-13T16:18:02Z",
+  "dataset": "AMLworld HI-Small (synthetic) \u2014 shadow candidate, NOT production validation.",
+  "deployed": false,
+  "shadow_only": true,
+  "feature_set": "approved_parity_clean_only",
+  "approved_features": [
+    "amount",
+    "is_cross_bank",
+    "hour",
+    "day_of_week",
+    "is_weekend",
+    "currency_enc",
+    "payment_type_enc",
+    "source_out_tx_count_1h",
+    "source_out_tx_count_24h",
+    "target_in_tx_count_1h",
+    "target_in_tx_count_24h",
+    "source_out_amount_sum_1h",
+    "source_out_amount_sum_24h",
+    "target_in_amount_sum_1h",
+    "target_in_amount_sum_24h"
+  ],
+  "identity_features_excluded": [
+    "target_account_enc",
+    "source_bank_enc",
+    "fan_in_score",
+    "fan_out_score",
+    "sweep_ratio",
+    "rapid_movement_flag",
+    "source_account_enc",
+    "target_bank_enc"
+  ],
+  "report": "candidate_thresholds",
+  "model": "xgboost",
+  "split": "test",
+  "selection_note": "Each threshold maximises its F-beta on validation, then is frozen before test.",
+  "thresholds": [
+    {
+      "mode": "high_precision",
+      "recommended_use": "Compliance escalation \u2014 few, high-confidence alerts for SAR-style review.",
+      "threshold": 0.1360194981098175,
+      "precision": 0.6821378340365682,
+      "recall": 0.31069827033952596,
+      "f1": 0.4269366197183099,
+      "fpr": 0.0002972940975282495,
+      "n_alerts": 711,
+      "alerts_per_100k": 93.34
+    },
+    {
+      "mode": "balanced",
+      "recommended_use": "Analyst queue \u2014 day-to-day triage balance between precision and recall.",
+      "threshold": 0.05239101126790047,
+      "precision": 0.44,
+      "recall": 0.4509929532351057,
+      "f1": 0.44542866181588103,
+      "fpr": 0.0011786527052447414,
+      "n_alerts": 1600,
+      "alerts_per_100k": 210.04
+    },
+    {
+      "mode": "high_recall",
+      "recommended_use": "Monitoring only \u2014 broad watchlist; too noisy for direct escalation.",
+      "threshold": 0.0247227530926466,
+      "precision": 0.2598684210526316,
+      "recall": 0.5566944266495836,
+      "f1": 0.3543323139653415,
+      "fpr": 0.003255765006116892,
+      "n_alerts": 3344,
+      "alerts_per_100k": 438.99
+    }
+  ]
+}

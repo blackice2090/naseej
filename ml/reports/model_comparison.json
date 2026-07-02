@@ -1,0 +1,287 @@
+{
+  "source": "live",
+  "phase": "ml-evaluation-1",
+  "generated_at": "2026-06-13T10:01:19Z",
+  "dataset": "AMLworld HI-Small (synthetic) \u2014 research benchmark, not production validation.",
+  "primary_metric": "pr_auc",
+  "why_not_accuracy": "Labels are highly imbalanced (~0.1% positive); accuracy is dominated by the negative class and is intentionally not reported.",
+  "protocol": {
+    "split": "temporal 70%/15%/15% by timestamp",
+    "train_rows_used": 800000,
+    "train_sample_target": 800000,
+    "feature_set": "full_with_account_ids",
+    "feature_count": 32,
+    "threshold_selection": "balanced threshold maximizes F1 on validation; test metrics reported at that frozen threshold",
+    "model_selection": "best validation PR-AUC",
+    "seed": 42,
+    "hyperparameters": "identical untuned configurations as ml/src/train_baseline.py \u2014 protocol comparison, not a tuning exercise",
+    "leakage_note": "All features are point-in-time (strictly-before semantics). The temporal split prevents train/test time overlap; this differs from the deployed baseline's stratified-random protocol, so numbers are not directly comparable with model_metrics.json."
+  },
+  "split_meta": {
+    "train": {
+      "rows": 3554835,
+      "positives": 2856,
+      "start": "2022-09-01 00:00:00",
+      "end": "2022-09-07 14:55:00"
+    },
+    "val": {
+      "rows": 761750,
+      "positives": 760,
+      "start": "2022-09-07 14:55:00",
+      "end": "2022-09-09 03:16:00"
+    },
+    "test": {
+      "rows": 761751,
+      "positives": 1561,
+      "start": "2022-09-09 03:16:00",
+      "end": "2022-09-18 16:18:00"
+    }
+  },
+  "availability": {
+    "logistic_regression": {
+      "available": true,
+      "library": "scikit-learn 1.8.0"
+    },
+    "random_forest": {
+      "available": true,
+      "library": "scikit-learn 1.8.0"
+    },
+    "xgboost": {
+      "available": true,
+      "library": "xgboost 3.2.0"
+    },
+    "lightgbm": {
+      "available": true,
+      "library": "lightgbm 4.6.0"
+    }
+  },
+  "models": [
+    {
+      "model": "logistic_regression",
+      "fit_seconds": 4.77,
+      "val": {
+        "threshold": 0.959083909309593,
+        "pr_auc": 0.02329091379984156,
+        "roc_auc": 0.9623351662412052,
+        "precision": 0.03490759753593429,
+        "recall": 0.26842105263157895,
+        "f1": 0.06178073894609327,
+        "fpr": 0.007411398310096059,
+        "n_alerts": 5844,
+        "n_confirmed_laundering": 204,
+        "n_total": 761750,
+        "n_positive": 760,
+        "prevalence": 0.0009977026583524778,
+        "confusion_matrix": [
+          [
+            755350,
+            5640
+          ],
+          [
+            556,
+            204
+          ]
+        ],
+        "alerts_per_100k": 767.18
+      },
+      "test": {
+        "threshold": 0.959083909309593,
+        "pr_auc": 0.043413138185443255,
+        "roc_auc": 0.9587283596512112,
+        "precision": 0.04700162074554295,
+        "recall": 0.464445868033312,
+        "f1": 0.0853644177557989,
+        "fpr": 0.01933727094542154,
+        "n_alerts": 15425,
+        "n_confirmed_laundering": 725,
+        "n_total": 761751,
+        "n_positive": 1561,
+        "prevalence": 0.0020492260594341194,
+        "confusion_matrix": [
+          [
+            745490,
+            14700
+          ],
+          [
+            836,
+            725
+          ]
+        ],
+        "alerts_per_100k": 2024.94
+      }
+    },
+    {
+      "model": "random_forest",
+      "fit_seconds": 70.16,
+      "val": {
+        "threshold": 0.12494678609148567,
+        "pr_auc": 0.38595251878069875,
+        "roc_auc": 0.9374660682656455,
+        "precision": 0.431266846361186,
+        "recall": 0.42105263157894735,
+        "f1": 0.426098535286285,
+        "fpr": 0.0005545407955426484,
+        "n_alerts": 742,
+        "n_confirmed_laundering": 320,
+        "n_total": 761750,
+        "n_positive": 760,
+        "prevalence": 0.0009977026583524778,
+        "confusion_matrix": [
+          [
+            760568,
+            422
+          ],
+          [
+            440,
+            320
+          ]
+        ],
+        "alerts_per_100k": 97.41
+      },
+      "test": {
+        "threshold": 0.12494678609148567,
+        "pr_auc": 0.5739926220170071,
+        "roc_auc": 0.9657719336476275,
+        "precision": 0.5742372881355933,
+        "recall": 0.5426008968609866,
+        "f1": 0.5579710144927537,
+        "fpr": 0.0008261092621581447,
+        "n_alerts": 1475,
+        "n_confirmed_laundering": 847,
+        "n_total": 761751,
+        "n_positive": 1561,
+        "prevalence": 0.0020492260594341194,
+        "confusion_matrix": [
+          [
+            759562,
+            628
+          ],
+          [
+            714,
+            847
+          ]
+        ],
+        "alerts_per_100k": 193.63
+      }
+    },
+    {
+      "model": "xgboost",
+      "fit_seconds": 14.05,
+      "val": {
+        "threshold": 0.12369396537542343,
+        "pr_auc": 0.27225663533864963,
+        "roc_auc": 0.9778967027715282,
+        "precision": 0.4158790170132325,
+        "recall": 0.2894736842105263,
+        "f1": 0.3413498836307215,
+        "fpr": 0.000406050013797816,
+        "n_alerts": 529,
+        "n_confirmed_laundering": 220,
+        "n_total": 761750,
+        "n_positive": 760,
+        "prevalence": 0.0009977026583524778,
+        "confusion_matrix": [
+          [
+            760681,
+            309
+          ],
+          [
+            540,
+            220
+          ]
+        ],
+        "alerts_per_100k": 69.45
+      },
+      "test": {
+        "threshold": 0.12369396537542343,
+        "pr_auc": 0.5784015767689401,
+        "roc_auc": 0.9859269091490067,
+        "precision": 0.616822429906542,
+        "recall": 0.5496476617552851,
+        "f1": 0.5813008130081301,
+        "fpr": 0.0007011405043475973,
+        "n_alerts": 1391,
+        "n_confirmed_laundering": 858,
+        "n_total": 761751,
+        "n_positive": 1561,
+        "prevalence": 0.0020492260594341194,
+        "confusion_matrix": [
+          [
+            759657,
+            533
+          ],
+          [
+            703,
+            858
+          ]
+        ],
+        "alerts_per_100k": 182.61
+      }
+    },
+    {
+      "model": "lightgbm",
+      "fit_seconds": 13.88,
+      "val": {
+        "threshold": 0.7647605431857136,
+        "pr_auc": 0.379388907140214,
+        "roc_auc": 0.9728054487195004,
+        "precision": 0.5152671755725191,
+        "recall": 0.35526315789473684,
+        "f1": 0.4205607476635514,
+        "fpr": 0.00033377573949723387,
+        "n_alerts": 524,
+        "n_confirmed_laundering": 270,
+        "n_total": 761750,
+        "n_positive": 760,
+        "prevalence": 0.0009977026583524778,
+        "confusion_matrix": [
+          [
+            760736,
+            254
+          ],
+          [
+            490,
+            270
+          ]
+        ],
+        "alerts_per_100k": 68.79
+      },
+      "test": {
+        "threshold": 0.7647605431857136,
+        "pr_auc": 0.6117638585152108,
+        "roc_auc": 0.983155439266553,
+        "precision": 0.6363636363636364,
+        "recall": 0.5560538116591929,
+        "f1": 0.5935042735042735,
+        "fpr": 0.0006524684618319104,
+        "n_alerts": 1364,
+        "n_confirmed_laundering": 868,
+        "n_total": 761751,
+        "n_positive": 1561,
+        "prevalence": 0.0020492260594341194,
+        "confusion_matrix": [
+          [
+            759694,
+            496
+          ],
+          [
+            693,
+            868
+          ]
+        ],
+        "alerts_per_100k": 179.06
+      }
+    }
+  ],
+  "best_model": "random_forest",
+  "best_model_test_pr_auc": 0.5739926220170071,
+  "test_leader": "lightgbm",
+  "test_leader_pr_auc": 0.6117638585152108,
+  "selection_note": "Model selection is on validation PR-AUC (test held out), which picks 'random_forest'. The highest held-out test PR-AUC belongs to 'lightgbm' (0.6118). On validation these two are within 0.0066 PR-AUC (a near-tie), so 'random_forest' winning selection while 'lightgbm' leads on test reflects estimation noise near the top, not a decisive gap. The gradient-boosting models lead on the unbiased test set.",
+  "deployed_baseline": {
+    "model_name": "xgboost",
+    "pr_auc": 0.227455635838831,
+    "protocol": "stratified random split over a 300k sample of pre-featurized rows (legacy protocol)"
+  },
+  "deployed_baseline_untouched": true
+}

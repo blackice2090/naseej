@@ -1,0 +1,106 @@
+{
+  "source": "live",
+  "model_name": "xgboost",
+  "features": [
+    {
+      "feature": "payment_type_enc",
+      "importance": 0.2114625871181488
+    },
+    {
+      "feature": "account_pair_tx_count_before",
+      "importance": 0.1544019877910614
+    },
+    {
+      "feature": "is_cross_bank",
+      "importance": 0.07599015533924103
+    },
+    {
+      "feature": "target_unique_sources_total_before",
+      "importance": 0.04717222601175308
+    },
+    {
+      "feature": "cross_bank_flow_flag",
+      "importance": 0.04457065463066101
+    },
+    {
+      "feature": "account_pair_amount_sum_before",
+      "importance": 0.0355970524251461
+    },
+    {
+      "feature": "source_out_amount_sum_total_before",
+      "importance": 0.032709669321775436
+    },
+    {
+      "feature": "source_out_tx_count_24h",
+      "importance": 0.02929629758000374
+    },
+    {
+      "feature": "fan_out_score",
+      "importance": 0.027833890169858932
+    },
+    {
+      "feature": "target_in_tx_count_1h",
+      "importance": 0.02702329307794571
+    },
+    {
+      "feature": "target_in_amount_sum_1h",
+      "importance": 0.02325327694416046
+    },
+    {
+      "feature": "source_unique_targets_total_before",
+      "importance": 0.022719938308000565
+    },
+    {
+      "feature": "source_out_tx_count_1h",
+      "importance": 0.021174440160393715
+    },
+    {
+      "feature": "day_of_week",
+      "importance": 0.019815539941191673
+    },
+    {
+      "feature": "amount",
+      "importance": 0.01785803772509098
+    },
+    {
+      "feature": "hour",
+      "importance": 0.017642829567193985
+    },
+    {
+      "feature": "source_out_amount_sum_24h",
+      "importance": 0.01679742895066738
+    },
+    {
+      "feature": "source_out_amount_sum_1h",
+      "importance": 0.01632043346762657
+    },
+    {
+      "feature": "sweep_ratio",
+      "importance": 0.015312672592699528
+    },
+    {
+      "feature": "source_account_enc",
+      "importance": 0.01500245276838541
+    },
+    {
+      "feature": "fan_in_score",
+      "importance": 0.01406001951545477
+    },
+    {
+      "feature": "target_account_enc",
+      "importance": 0.013535975478589535
+    },
+    {
+      "feature": "target_in_amount_sum_total_before",
+      "importance": 0.01332127209752798
+    },
+    {
+      "feature": "target_in_amount_sum_24h",
+      "importance": 0.012753702700138092
+    },
+    {
+      "feature": "target_in_tx_count_total_before",
+      "importance": 0.011849450878798962
+    }
+  ]
+}

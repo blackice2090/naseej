@@ -1,0 +1,829 @@
+{
+  "source": "live",
+  "report": "feature_parity",
+  "contract_version": "feature-contract-2",
+  "harness": "deterministic synthetic replay over multiple scenarios (no real data)",
+  "scenarios_run": [
+    "fan_in_then_sweep",
+    "fan_out_dispersion",
+    "cross_bank_pass_through",
+    "quiet_legitimate"
+  ],
+  "point_in_time": "every scenario reads focus features strictly after all its events; no future tx influences any feature",
+  "numeric_tolerance": 0.011,
+  "parity_targets_clean": true,
+  "name_collisions": [],
+  "collisions_resolved": true,
+  "result_counts": {
+    "not_replayed": 7,
+    "definition_mismatch": 4,
+    "matched": 8,
+    "train_only": 12,
+    "serve_only": 13
+  },
+  "features": [
+    {
+      "canonical_name": "amount",
+      "offline_name": "amount",
+      "online_name": "amount",
+      "parity_status_contract": "match",
+      "trainable": true,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "not_replayed",
+      "mismatch_notes": "Intrinsic to the transaction; identical offline and at serving."
+    },
+    {
+      "canonical_name": "is_cross_bank",
+      "offline_name": "is_cross_bank",
+      "online_name": "tx_is_cross_bank",
+      "parity_status_contract": "name_only",
+      "trainable": true,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "not_replayed",
+      "mismatch_notes": "Offline duplicates this as cross_bank_flow_flag; online exposes it as tx_is_cross_bank."
+    },
+    {
+      "canonical_name": "hour_of_day",
+      "offline_name": "hour",
+      "online_name": null,
+      "parity_status_contract": "match",
+      "trainable": true,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "not_replayed",
+      "mismatch_notes": "Derived from the tx timestamp at serving (scoring_service); not stored online."
+    },
+    {
+      "canonical_name": "day_of_week",
+      "offline_name": "day_of_week",
+      "online_name": null,
+      "parity_status_contract": "match",
+      "trainable": true,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "not_replayed",
+      "mismatch_notes": "Derived from the tx timestamp at serving."
+    },
+    {
+      "canonical_name": "is_weekend",
+      "offline_name": "is_weekend",
+      "online_name": null,
+      "parity_status_contract": "match",
+      "trainable": true,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "not_replayed",
+      "mismatch_notes": "Derived from the tx timestamp at serving."
+    },
+    {
+      "canonical_name": "currency_code",
+      "offline_name": "currency_enc",
+      "online_name": null,
+      "parity_status_contract": "name_only",
+      "trainable": true,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "not_replayed",
+      "mismatch_notes": "Servable: scoring_service.CURRENCY_MAP reproduces the training LabelEncoder order; -1 for unknowns."
+    },
+    {
+      "canonical_name": "payment_type_code",
+      "offline_name": "payment_type_enc",
+      "online_name": null,
+      "parity_status_contract": "name_only",
+      "trainable": true,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "not_replayed",
+      "mismatch_notes": "Servable: scoring_service.PAYMENT_TYPE_MAP reproduces the training LabelEncoder order; -1 for unknowns."
+    },
+    {
+      "canonical_name": "source_bank_code",
+      "offline_name": "source_bank_enc",
+      "online_name": null,
+      "parity_status_contract": "definition_mismatch",
+      "trainable": false,
+      "servable": false,
+      "identity_memorization_risk": true,
+      "result": "definition_mismatch",
+      "mismatch_notes": "Offline LabelEncoder codes are NOT reproducible at serving (scoring_service hashes the bank id); memorisation risk. PERMANENTLY EXCLUDED from the approved training set. The safe structural replacement for bank identity is 'is_cross_bank' (approved); per-counterparty newness is covered by the serve-only beneficiary_age_bucket / new_beneficiary_flag."
+    },
+    {
+      "canonical_name": "target_bank_code",
+      "offline_name": "target_bank_enc",
+      "online_name": null,
+      "parity_status_contract": "definition_mismatch",
+      "trainable": false,
+      "servable": false,
+      "identity_memorization_risk": true,
+      "result": "definition_mismatch",
+      "mismatch_notes": "Same encoding-parity problem as source_bank_code; excluded from training."
+    },
+    {
+      "canonical_name": "source_account_code",
+      "offline_name": "source_account_enc",
+      "online_name": null,
+      "parity_status_contract": "definition_mismatch",
+      "trainable": false,
+      "servable": false,
+      "identity_memorization_risk": true,
+      "result": "definition_mismatch",
+      "mismatch_notes": "Account-identity memorisation (ablation showed lift here does not generalise); serving always sends -1 (unseen). EXCLUDED from training."
+    },
+    {
+      "canonical_name": "target_account_code",
+      "offline_name": "target_account_enc",
+      "online_name": null,
+      "parity_status_contract": "definition_mismatch",
+      "trainable": false,
+      "servable": false,
+      "identity_memorization_risk": true,
+      "result": "definition_mismatch",
+      "mismatch_notes": "Account-identity memorisation; serving always sends -1. EXCLUDED from training."
+    },
+    {
+      "canonical_name": "source_outflow_count_1h",
+      "offline_name": "source_out_tx_count_1h",
+      "online_name": "source_out_degree_1h",
+      "parity_status_contract": "name_only",
+      "trainable": true,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "matched",
+      "mismatch_notes": "Identical definition; offline name source_out_tx_count_1h, online source_out_degree_1h."
+    },
+    {
+      "canonical_name": "source_outflow_count_24h",
+      "offline_name": "source_out_tx_count_24h",
+      "online_name": "source_out_degree_24h",
+      "parity_status_contract": "name_only",
+      "trainable": true,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "matched",
+      "mismatch_notes": "Identical definition; name differs."
+    },
+    {
+      "canonical_name": "target_inflow_count_1h",
+      "offline_name": "target_in_tx_count_1h",
+      "online_name": "target_in_degree_1h",
+      "parity_status_contract": "name_only",
+      "trainable": true,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "matched",
+      "mismatch_notes": "Identical definition; name differs."
+    },
+    {
+      "canonical_name": "target_inflow_count_24h",
+      "offline_name": "target_in_tx_count_24h",
+      "online_name": "target_in_degree_24h",
+      "parity_status_contract": "name_only",
+      "trainable": true,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "matched",
+      "mismatch_notes": "Identical definition; name differs."
+    },
+    {
+      "canonical_name": "source_outflow_amount_1h",
+      "offline_name": "source_out_amount_sum_1h",
+      "online_name": "amount_sent_1h",
+      "parity_status_contract": "name_only",
+      "trainable": true,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "matched",
+      "mismatch_notes": "Identical definition; online rounds to 2dp (use tolerance in parity check)."
+    },
+    {
+      "canonical_name": "source_outflow_amount_24h",
+      "offline_name": "source_out_amount_sum_24h",
+      "online_name": "amount_sent_24h",
+      "parity_status_contract": "name_only",
+      "trainable": true,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "matched",
+      "mismatch_notes": "Identical definition; online rounds to 2dp."
+    },
+    {
+      "canonical_name": "target_inflow_amount_1h",
+      "offline_name": "target_in_amount_sum_1h",
+      "online_name": "amount_received_1h",
+      "parity_status_contract": "name_only",
+      "trainable": true,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "matched",
+      "mismatch_notes": "Identical definition; online rounds to 2dp."
+    },
+    {
+      "canonical_name": "target_inflow_amount_24h",
+      "offline_name": "target_in_amount_sum_24h",
+      "online_name": "amount_received_24h",
+      "parity_status_contract": "name_only",
+      "trainable": true,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "matched",
+      "mismatch_notes": "Identical definition; online rounds to 2dp."
+    },
+    {
+      "canonical_name": "source_outflow_count_all_time",
+      "offline_name": "source_out_tx_count_total_before",
+      "online_name": null,
+      "parity_status_contract": "train_only",
+      "trainable": false,
+      "servable": false,
+      "identity_memorization_risk": false,
+      "result": "train_only",
+      "mismatch_notes": "Online store prunes events past ~25h, so it cannot reproduce all-time cumulatives. EXCLUDED from training until the online store keeps per-account running totals."
+    },
+    {
+      "canonical_name": "source_outflow_amount_all_time",
+      "offline_name": "source_out_amount_sum_total_before",
+      "online_name": null,
+      "parity_status_contract": "train_only",
+      "trainable": false,
+      "servable": false,
+      "identity_memorization_risk": false,
+      "result": "train_only",
+      "mismatch_notes": "Not reproducible online (25h pruning). EXCLUDED from training."
+    },
+    {
+      "canonical_name": "source_unique_targets_all_time",
+      "offline_name": "source_unique_targets_total_before",
+      "online_name": null,
+      "parity_status_contract": "train_only",
+      "trainable": false,
+      "servable": false,
+      "identity_memorization_risk": false,
+      "result": "train_only",
+      "mismatch_notes": "Online has only unique_targets_1h (1h window); all-time not reproducible. EXCLUDED."
+    },
+    {
+      "canonical_name": "target_inflow_count_all_time",
+      "offline_name": "target_in_tx_count_total_before",
+      "online_name": null,
+      "parity_status_contract": "train_only",
+      "trainable": false,
+      "servable": false,
+      "identity_memorization_risk": false,
+      "result": "train_only",
+      "mismatch_notes": "Not reproducible online. EXCLUDED from training."
+    },
+    {
+      "canonical_name": "target_inflow_amount_all_time",
+      "offline_name": "target_in_amount_sum_total_before",
+      "online_name": null,
+      "parity_status_contract": "train_only",
+      "trainable": false,
+      "servable": false,
+      "identity_memorization_risk": false,
+      "result": "train_only",
+      "mismatch_notes": "Not reproducible online. EXCLUDED from training."
+    },
+    {
+      "canonical_name": "target_unique_sources_all_time",
+      "offline_name": "target_unique_sources_total_before",
+      "online_name": null,
+      "parity_status_contract": "train_only",
+      "trainable": false,
+      "servable": false,
+      "identity_memorization_risk": false,
+      "result": "train_only",
+      "mismatch_notes": "Not reproducible online. EXCLUDED from training."
+    },
+    {
+      "canonical_name": "account_pair_count_all_time",
+      "offline_name": "account_pair_tx_count_before",
+      "online_name": null,
+      "parity_status_contract": "train_only",
+      "trainable": false,
+      "servable": false,
+      "identity_memorization_risk": false,
+      "result": "train_only",
+      "mismatch_notes": "Online tracks only pair_first_seen, not pair counts. EXCLUDED until online keeps pair tallies."
+    },
+    {
+      "canonical_name": "account_pair_amount_all_time",
+      "offline_name": "account_pair_amount_sum_before",
+      "online_name": null,
+      "parity_status_contract": "train_only",
+      "trainable": false,
+      "servable": false,
+      "identity_memorization_risk": false,
+      "result": "train_only",
+      "mismatch_notes": "Not reproducible online. EXCLUDED from training."
+    },
+    {
+      "canonical_name": "fan_in_count_24h",
+      "offline_name": "fan_in_score",
+      "online_name": null,
+      "parity_status_contract": "train_only",
+      "trainable": false,
+      "servable": false,
+      "identity_memorization_risk": false,
+      "result": "train_only",
+      "mismatch_notes": "COLLISION RESOLVED: the online store now emits 'fan_in_normalized_1h' (a separate normalised 1h intensity), so this offline 24h count is unambiguous. It remains train_only (online has no 24h-count equivalent) and EXCLUDED from training."
+    },
+    {
+      "canonical_name": "fan_in_normalized_1h",
+      "offline_name": null,
+      "online_name": "fan_in_normalized_1h",
+      "parity_status_contract": "serve_only",
+      "trainable": false,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "serve_only",
+      "mismatch_notes": "Renamed from 'fan_in_score' to end the collision. Serving-only by decision (B): no offline point-in-time equivalent of this normalised 1h score; used by the rule layer & explanations, never the trained model."
+    },
+    {
+      "canonical_name": "fan_out_count_24h",
+      "offline_name": "fan_out_score",
+      "online_name": null,
+      "parity_status_contract": "train_only",
+      "trainable": false,
+      "servable": false,
+      "identity_memorization_risk": false,
+      "result": "train_only",
+      "mismatch_notes": "COLLISION RESOLVED: online now emits 'fan_out_normalized_1h'. This offline 24h count is train_only (no online 24h-count equivalent) and EXCLUDED from training."
+    },
+    {
+      "canonical_name": "fan_out_normalized_1h",
+      "offline_name": null,
+      "online_name": "fan_out_normalized_1h",
+      "parity_status_contract": "serve_only",
+      "trainable": false,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "serve_only",
+      "mismatch_notes": "Renamed from 'fan_out_score' to end the collision. Serving-only by decision (B): no offline point-in-time equivalent; rule-layer/explanation use only."
+    },
+    {
+      "canonical_name": "sweep_ratio_all_time",
+      "offline_name": "sweep_ratio",
+      "online_name": null,
+      "parity_status_contract": "train_only",
+      "trainable": false,
+      "servable": false,
+      "identity_memorization_risk": false,
+      "result": "train_only",
+      "mismatch_notes": "Distinct name from the online 'rolling_amount_ratio' (24h average) \u2014 no collision. Offline all-time ratio has no servable 25h-window equivalent: train_only, EXCLUDED. The online 24h analog (rolling_amount_ratio_24h) is serve-only."
+    },
+    {
+      "canonical_name": "rolling_amount_ratio_24h",
+      "offline_name": null,
+      "online_name": "rolling_amount_ratio",
+      "parity_status_contract": "serve_only",
+      "trainable": false,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "serve_only",
+      "mismatch_notes": "Serve-only; corresponds conceptually to offline sweep_ratio_all_time but different window."
+    },
+    {
+      "canonical_name": "rapid_movement_flag",
+      "offline_name": "rapid_movement_flag",
+      "online_name": null,
+      "parity_status_contract": "train_only",
+      "trainable": false,
+      "servable": false,
+      "identity_memorization_risk": false,
+      "result": "train_only",
+      "mismatch_notes": "No online equivalent (online has sweep_after_fan_in_flag with different logic). EXCLUDED."
+    },
+    {
+      "canonical_name": "sweep_after_fan_in_flag",
+      "offline_name": null,
+      "online_name": "sweep_after_fan_in_flag",
+      "parity_status_contract": "serve_only",
+      "trainable": false,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "serve_only",
+      "mismatch_notes": "Serving-only by decision (B): online behavioural flag used by the rule layer & explanations; no offline point-in-time equivalent \u2014 never a training feature."
+    },
+    {
+      "canonical_name": "cross_bank_transfer_count_24h",
+      "offline_name": null,
+      "online_name": "cross_bank_transfer_count_24h",
+      "parity_status_contract": "serve_only",
+      "trainable": false,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "serve_only",
+      "mismatch_notes": "Serving-only by decision (B): online-only, no offline point-in-time equivalent implemented; rule-layer/explanation use only, never a training feature."
+    },
+    {
+      "canonical_name": "account_velocity_zscore",
+      "offline_name": null,
+      "online_name": "account_velocity_zscore",
+      "parity_status_contract": "serve_only",
+      "trainable": false,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "serve_only",
+      "mismatch_notes": "Serving-only by decision (B): online-only, no offline point-in-time equivalent implemented; rule-layer/explanation use only, never a training feature."
+    },
+    {
+      "canonical_name": "scatter_gather_score",
+      "offline_name": null,
+      "online_name": "scatter_gather_score",
+      "parity_status_contract": "serve_only",
+      "trainable": false,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "serve_only",
+      "mismatch_notes": "Serving-only by decision (B): online-only, no offline point-in-time equivalent implemented; rule-layer/explanation use only, never a training feature."
+    },
+    {
+      "canonical_name": "simple_cycle_score",
+      "offline_name": null,
+      "online_name": "simple_cycle_score",
+      "parity_status_contract": "serve_only",
+      "trainable": false,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "serve_only",
+      "mismatch_notes": "Serving-only by decision (B): online-only, no offline point-in-time equivalent implemented; rule-layer/explanation use only, never a training feature."
+    },
+    {
+      "canonical_name": "unique_targets_1h",
+      "offline_name": null,
+      "online_name": "unique_targets_1h",
+      "parity_status_contract": "serve_only",
+      "trainable": false,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "serve_only",
+      "mismatch_notes": "Offline only has the all-time variant; the 1h online version is serve-only."
+    },
+    {
+      "canonical_name": "unique_sources_1h",
+      "offline_name": null,
+      "online_name": "unique_sources_1h",
+      "parity_status_contract": "serve_only",
+      "trainable": false,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "serve_only",
+      "mismatch_notes": "Serve-only 1h variant."
+    },
+    {
+      "canonical_name": "new_beneficiary_flag",
+      "offline_name": null,
+      "online_name": "new_beneficiary_flag",
+      "parity_status_contract": "serve_only",
+      "trainable": false,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "serve_only",
+      "mismatch_notes": "Serving-only by decision (B): online-only, no offline point-in-time equivalent implemented; rule-layer/explanation use only, never a training feature."
+    },
+    {
+      "canonical_name": "beneficiary_age_bucket",
+      "offline_name": null,
+      "online_name": "beneficiary_age_bucket",
+      "parity_status_contract": "serve_only",
+      "trainable": false,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "serve_only",
+      "mismatch_notes": "Serving-only by decision (B): online-only, no offline point-in-time equivalent implemented; rule-layer/explanation use only, never a training feature."
+    },
+    {
+      "canonical_name": "first_seen_delta_bucket",
+      "offline_name": null,
+      "online_name": "first_seen_delta_bucket",
+      "parity_status_contract": "serve_only",
+      "trainable": false,
+      "servable": true,
+      "identity_memorization_risk": false,
+      "result": "serve_only",
+      "mismatch_notes": "Serving-only by decision (B): online-only, no offline point-in-time equivalent implemented; rule-layer/explanation use only, never a training feature."
+    }
+  ],
+  "scenarios": [
+    {
+      "scenario": "fan_in_then_sweep",
+      "focus_account": "(pseudonymous synthetic handle)",
+      "as_of": "2024-05-01T10:16:00",
+      "comparisons": {
+        "amount": {
+          "offline_value": null,
+          "online_value": null,
+          "result": "not_replayed",
+          "abs_delta": null
+        },
+        "is_cross_bank": {
+          "offline_value": null,
+          "online_value": null,
+          "result": "not_replayed",
+          "abs_delta": null
+        },
+        "source_outflow_count_1h": {
+          "offline_value": 2,
+          "online_value": 2,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "source_outflow_count_24h": {
+          "offline_value": 2,
+          "online_value": 2,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "target_inflow_count_1h": {
+          "offline_value": 5,
+          "online_value": 5,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "target_inflow_count_24h": {
+          "offline_value": 5,
+          "online_value": 5,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "source_outflow_amount_1h": {
+          "offline_value": 3200.0,
+          "online_value": 3200.0,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "source_outflow_amount_24h": {
+          "offline_value": 3200.0,
+          "online_value": 3200.0,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "target_inflow_amount_1h": {
+          "offline_value": 6000.0,
+          "online_value": 6000.0,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "target_inflow_amount_24h": {
+          "offline_value": 6000.0,
+          "online_value": 6000.0,
+          "result": "matched",
+          "abs_delta": 0.0
+        }
+      }
+    },
+    {
+      "scenario": "fan_out_dispersion",
+      "focus_account": "(pseudonymous synthetic handle)",
+      "as_of": "2024-06-01T09:16:00",
+      "comparisons": {
+        "amount": {
+          "offline_value": null,
+          "online_value": null,
+          "result": "not_replayed",
+          "abs_delta": null
+        },
+        "is_cross_bank": {
+          "offline_value": null,
+          "online_value": null,
+          "result": "not_replayed",
+          "abs_delta": null
+        },
+        "source_outflow_count_1h": {
+          "offline_value": 6,
+          "online_value": 6,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "source_outflow_count_24h": {
+          "offline_value": 6,
+          "online_value": 6,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "target_inflow_count_1h": {
+          "offline_value": 0,
+          "online_value": 0,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "target_inflow_count_24h": {
+          "offline_value": 0,
+          "online_value": 0,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "source_outflow_amount_1h": {
+          "offline_value": 4950.0,
+          "online_value": 4950.0,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "source_outflow_amount_24h": {
+          "offline_value": 4950.0,
+          "online_value": 4950.0,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "target_inflow_amount_1h": {
+          "offline_value": 0.0,
+          "online_value": 0,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "target_inflow_amount_24h": {
+          "offline_value": 0.0,
+          "online_value": 0,
+          "result": "matched",
+          "abs_delta": 0.0
+        }
+      }
+    },
+    {
+      "scenario": "cross_bank_pass_through",
+      "focus_account": "(pseudonymous synthetic handle)",
+      "as_of": "2024-06-02T14:21:00",
+      "comparisons": {
+        "amount": {
+          "offline_value": null,
+          "online_value": null,
+          "result": "not_replayed",
+          "abs_delta": null
+        },
+        "is_cross_bank": {
+          "offline_value": null,
+          "online_value": null,
+          "result": "not_replayed",
+          "abs_delta": null
+        },
+        "source_outflow_count_1h": {
+          "offline_value": 2,
+          "online_value": 2,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "source_outflow_count_24h": {
+          "offline_value": 2,
+          "online_value": 2,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "target_inflow_count_1h": {
+          "offline_value": 3,
+          "online_value": 3,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "target_inflow_count_24h": {
+          "offline_value": 3,
+          "online_value": 3,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "source_outflow_amount_1h": {
+          "offline_value": 5500.0,
+          "online_value": 5500.0,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "source_outflow_amount_24h": {
+          "offline_value": 5500.0,
+          "online_value": 5500.0,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "target_inflow_amount_1h": {
+          "offline_value": 6150.0,
+          "online_value": 6150.0,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "target_inflow_amount_24h": {
+          "offline_value": 6150.0,
+          "online_value": 6150.0,
+          "result": "matched",
+          "abs_delta": 0.0
+        }
+      }
+    },
+    {
+      "scenario": "quiet_legitimate",
+      "focus_account": "(pseudonymous synthetic handle)",
+      "as_of": "2024-06-03T08:33:00",
+      "comparisons": {
+        "amount": {
+          "offline_value": null,
+          "online_value": null,
+          "result": "not_replayed",
+          "abs_delta": null
+        },
+        "is_cross_bank": {
+          "offline_value": null,
+          "online_value": null,
+          "result": "not_replayed",
+          "abs_delta": null
+        },
+        "source_outflow_count_1h": {
+          "offline_value": 1,
+          "online_value": 1,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "source_outflow_count_24h": {
+          "offline_value": 1,
+          "online_value": 1,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "target_inflow_count_1h": {
+          "offline_value": 0,
+          "online_value": 0,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "target_inflow_count_24h": {
+          "offline_value": 0,
+          "online_value": 0,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "source_outflow_amount_1h": {
+          "offline_value": 1200.0,
+          "online_value": 1200.0,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "source_outflow_amount_24h": {
+          "offline_value": 1200.0,
+          "online_value": 1200.0,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "target_inflow_amount_1h": {
+          "offline_value": 0.0,
+          "online_value": 0,
+          "result": "matched",
+          "abs_delta": 0.0
+        },
+        "target_inflow_amount_24h": {
+          "offline_value": 0.0,
+          "online_value": 0,
+          "result": "matched",
+          "abs_delta": 0.0
+        }
+      }
+    }
+  ],
+  "summary": {
+    "comparable_parity_targets": [
+      "source_outflow_amount_1h",
+      "source_outflow_amount_24h",
+      "source_outflow_count_1h",
+      "source_outflow_count_24h",
+      "target_inflow_amount_1h",
+      "target_inflow_amount_24h",
+      "target_inflow_count_1h",
+      "target_inflow_count_24h"
+    ],
+    "definition_mismatches": [
+      "source_bank_code",
+      "target_bank_code",
+      "source_account_code",
+      "target_account_code"
+    ],
+    "train_only": [
+      "source_outflow_count_all_time",
+      "source_outflow_amount_all_time",
+      "source_unique_targets_all_time",
+      "target_inflow_count_all_time",
+      "target_inflow_amount_all_time",
+      "target_unique_sources_all_time",
+      "account_pair_count_all_time",
+      "account_pair_amount_all_time",
+      "fan_in_count_24h",
+      "fan_out_count_24h",
+      "sweep_ratio_all_time",
+      "rapid_movement_flag"
+    ],
+    "serve_only": [
+      "fan_in_normalized_1h",
+      "fan_out_normalized_1h",
+      "rolling_amount_ratio_24h",
+      "sweep_after_fan_in_flag",
+      "cross_bank_transfer_count_24h",
+      "account_velocity_zscore",
+      "scatter_gather_score",
+      "simple_cycle_score",
+      "unique_targets_1h",
+      "unique_sources_1h",
+      "new_beneficiary_flag",
+      "beneficiary_age_bucket",
+      "first_seen_delta_bucket"
+    ],
+    "value_mismatches": []
+  },
+  "note": "Synthetic AMLworld-style replay; not production validation. Retraining/GNN stay blocked until the approved set is parity-clean end-to-end (it now is for the 8 windowed features) AND the serve-only/train-only gaps are reconciled per FEATURE_CONTRACT.md."
+}

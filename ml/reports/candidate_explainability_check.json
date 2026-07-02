@@ -1,0 +1,164 @@
+{
+  "source": "live",
+  "report": "candidate_explainability_check",
+  "generated_at": "2026-06-13T16:18:04Z",
+  "deployed": false,
+  "shadow_only": true,
+  "candidate_model": "xgboost",
+  "method": "shap",
+  "method_note": "SHAP TreeExplainer (0.51.0)",
+  "all_features_resolve_in_contract": true,
+  "top_factors": [
+    {
+      "feature_name": "payment_type_enc",
+      "human_label": "Payment type",
+      "value_bucket": "known_category",
+      "direction": "decreases_risk",
+      "contribution_level": "high"
+    },
+    {
+      "feature_name": "source_out_amount_sum_1h",
+      "human_label": "Source sent volume in last 1h",
+      "value_bucket": "micro",
+      "direction": "decreases_risk",
+      "contribution_level": "medium"
+    },
+    {
+      "feature_name": "source_out_tx_count_24h",
+      "human_label": "Source sends in last 24h",
+      "value_bucket": "none",
+      "direction": "decreases_risk",
+      "contribution_level": "low"
+    },
+    {
+      "feature_name": "day_of_week",
+      "human_label": "Day of week",
+      "value_bucket": "weekday",
+      "direction": "decreases_risk",
+      "contribution_level": "low"
+    },
+    {
+      "feature_name": "amount",
+      "human_label": "Transaction amount",
+      "value_bucket": "micro",
+      "direction": "decreases_risk",
+      "contribution_level": "low"
+    },
+    {
+      "feature_name": "hour",
+      "human_label": "Time of day",
+      "value_bucket": "off_hours",
+      "direction": "decreases_risk",
+      "contribution_level": "low"
+    }
+  ],
+  "feature_resolution": [
+    {
+      "feature_name": "amount",
+      "canonical_name": "amount",
+      "human_label": "Transaction amount",
+      "value_bucket": "micro",
+      "resolves_in_contract": true
+    },
+    {
+      "feature_name": "is_cross_bank",
+      "canonical_name": "is_cross_bank",
+      "human_label": "Cross-bank transfer",
+      "value_bucket": "cross_bank",
+      "resolves_in_contract": true
+    },
+    {
+      "feature_name": "hour",
+      "canonical_name": "hour_of_day",
+      "human_label": "Time of day",
+      "value_bucket": "off_hours",
+      "resolves_in_contract": true
+    },
+    {
+      "feature_name": "day_of_week",
+      "canonical_name": "day_of_week",
+      "human_label": "Day of week",
+      "value_bucket": "weekday",
+      "resolves_in_contract": true
+    },
+    {
+      "feature_name": "is_weekend",
+      "canonical_name": "is_weekend",
+      "human_label": "Weekend timing",
+      "value_bucket": "weekday",
+      "resolves_in_contract": true
+    },
+    {
+      "feature_name": "currency_enc",
+      "canonical_name": "currency_code",
+      "human_label": "Currency",
+      "value_bucket": "known_category",
+      "resolves_in_contract": true
+    },
+    {
+      "feature_name": "payment_type_enc",
+      "canonical_name": "payment_type_code",
+      "human_label": "Payment type",
+      "value_bucket": "known_category",
+      "resolves_in_contract": true
+    },
+    {
+      "feature_name": "source_out_tx_count_1h",
+      "canonical_name": "source_outflow_count_1h",
+      "human_label": "Source sends in last 1h",
+      "value_bucket": "none",
+      "resolves_in_contract": true
+    },
+    {
+      "feature_name": "source_out_tx_count_24h",
+      "canonical_name": "source_outflow_count_24h",
+      "human_label": "Source sends in last 24h",
+      "value_bucket": "none",
+      "resolves_in_contract": true
+    },
+    {
+      "feature_name": "target_in_tx_count_1h",
+      "canonical_name": "target_inflow_count_1h",
+      "human_label": "Beneficiary inflows in last 1h",
+      "value_bucket": "none",
+      "resolves_in_contract": true
+    },
+    {
+      "feature_name": "target_in_tx_count_24h",
+      "canonical_name": "target_inflow_count_24h",
+      "human_label": "Beneficiary inflows in last 24h",
+      "value_bucket": "none",
+      "resolves_in_contract": true
+    },
+    {
+      "feature_name": "source_out_amount_sum_1h",
+      "canonical_name": "source_outflow_amount_1h",
+      "human_label": "Source sent volume in last 1h",
+      "value_bucket": "micro",
+      "resolves_in_contract": true
+    },
+    {
+      "feature_name": "source_out_amount_sum_24h",
+      "canonical_name": "source_outflow_amount_24h",
+      "human_label": "Source sent volume in last 24h",
+      "value_bucket": "micro",
+      "resolves_in_contract": true
+    },
+    {
+      "feature_name": "target_in_amount_sum_1h",
+      "canonical_name": "target_inflow_amount_1h",
+      "human_label": "Beneficiary inflow volume in last 1h",
+      "value_bucket": "micro",
+      "resolves_in_contract": true
+    },
+    {
+      "feature_name": "target_in_amount_sum_24h",
+      "canonical_name": "target_inflow_amount_24h",
+      "human_label": "Beneficiary inflow volume in last 24h",
+      "value_bucket": "micro",
+      "resolves_in_contract": true
+    }
+  ],
+  "pii_safe": true,
+  "note": "Sample explanation on one synthetic/pseudonymous test row. Buckets only \u2014 no raw values. The deployed explanation endpoints are unchanged; this is a candidate-only check."
+}

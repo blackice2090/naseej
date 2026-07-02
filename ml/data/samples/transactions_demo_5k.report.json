@@ -1,0 +1,46 @@
+{
+  "input": "ml\\data\\raw\\HI-Small_Trans.csv",
+  "output": "ml\\data\\samples\\transactions_demo_5k.parquet",
+  "rows_in": 5078345,
+  "rows_out": 5000,
+  "sampled": true,
+  "sample_target": 5000,
+  "prevalence_label": 0.001,
+  "columns_out": [
+    "timestamp",
+    "src_id",
+    "dst_id",
+    "from_bank_id",
+    "to_bank_id",
+    "amount",
+    "payment_format_code",
+    "payment_currency_code",
+    "hour_of_day",
+    "day_of_week",
+    "same_bank_transfer",
+    "cross_bank_transfer",
+    "is_laundering",
+    "label"
+  ],
+  "schema": {
+    "row_count": 5078345,
+    "columns": [
+      "amount_paid",
+      "amount_received",
+      "from_account",
+      "from_bank",
+      "is_laundering",
+      "payment_currency",
+      "payment_format",
+      "receiving_currency",
+      "timestamp",
+      "to_account",
+      "to_bank"
+    ],
+    "missing_required": [],
+    "missing_optional": [],
+    "ok": true
+  },
+  "drop_raw_accounts": true,
+  "salt_used": true
+}

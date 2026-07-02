@@ -1,0 +1,472 @@
+{
+  "source": "live",
+  "phase": "candidate-shadow-1",
+  "generated_at": "2026-06-13T16:18:02Z",
+  "dataset": "AMLworld HI-Small (synthetic) \u2014 shadow candidate, NOT production validation.",
+  "deployed": false,
+  "shadow_only": true,
+  "feature_set": "approved_parity_clean_only",
+  "approved_features": [
+    "amount",
+    "is_cross_bank",
+    "hour",
+    "day_of_week",
+    "is_weekend",
+    "currency_enc",
+    "payment_type_enc",
+    "source_out_tx_count_1h",
+    "source_out_tx_count_24h",
+    "target_in_tx_count_1h",
+    "target_in_tx_count_24h",
+    "source_out_amount_sum_1h",
+    "source_out_amount_sum_24h",
+    "target_in_amount_sum_1h",
+    "target_in_amount_sum_24h"
+  ],
+  "identity_features_excluded": [
+    "target_account_enc",
+    "source_bank_enc",
+    "fan_in_score",
+    "fan_out_score",
+    "sweep_ratio",
+    "rapid_movement_flag",
+    "source_account_enc",
+    "target_bank_enc"
+  ],
+  "report": "candidate_model_comparison",
+  "primary_metric": "pr_auc",
+  "availability": {
+    "logistic_regression": {
+      "available": true,
+      "library": "scikit-learn 1.8.0"
+    },
+    "random_forest": {
+      "available": true,
+      "library": "scikit-learn 1.8.0"
+    },
+    "xgboost": {
+      "available": true,
+      "library": "xgboost 3.2.0"
+    },
+    "lightgbm": {
+      "available": true,
+      "library": "lightgbm 4.6.0"
+    }
+  },
+  "selected_model": "xgboost",
+  "test_leader": "xgboost",
+  "leaderboard": [
+    {
+      "model": "logistic_regression",
+      "fit_seconds": 33.25,
+      "val": {
+        "threshold": 0.8281692799822942,
+        "pr_auc": 0.008106774579935661,
+        "roc_auc": 0.9230531506396447,
+        "precision": 0.010217566478646254,
+        "recall": 0.41710526315789476,
+        "f1": 0.019946515652037127,
+        "fpr": 0.04035269845858684,
+        "n_alerts": 31025,
+        "n_confirmed_laundering": 317,
+        "n_total": 761750,
+        "n_positive": 760,
+        "prevalence": 0.0009977026583524778,
+        "confusion_matrix": [
+          [
+            730282,
+            30708
+          ],
+          [
+            443,
+            317
+          ]
+        ],
+        "alerts_per_100k": 4072.86
+      },
+      "test": {
+        "threshold": 0.8281692799822942,
+        "pr_auc": 0.019271746619335114,
+        "roc_auc": 0.9362410830247021,
+        "precision": 0.027623401867112,
+        "recall": 0.6463805253042921,
+        "f1": 0.05298256668767066,
+        "fpr": 0.04672252989384233,
+        "n_alerts": 36527,
+        "n_confirmed_laundering": 1009,
+        "n_total": 761751,
+        "n_positive": 1561,
+        "prevalence": 0.0020492260594341194,
+        "confusion_matrix": [
+          [
+            724672,
+            35518
+          ],
+          [
+            552,
+            1009
+          ]
+        ],
+        "alerts_per_100k": 4795.14
+      }
+    },
+    {
+      "model": "random_forest",
+      "fit_seconds": 16278.7,
+      "val": {
+        "threshold": 0.12482756486543564,
+        "pr_auc": 0.09341716050097545,
+        "roc_auc": 0.9021572945837176,
+        "precision": 0.18998272884283246,
+        "recall": 0.14473684210526316,
+        "f1": 0.16430171769977597,
+        "fpr": 0.0006163024481267822,
+        "n_alerts": 579,
+        "n_confirmed_laundering": 110,
+        "n_total": 761750,
+        "n_positive": 760,
+        "prevalence": 0.0009977026583524778,
+        "confusion_matrix": [
+          [
+            760521,
+            469
+          ],
+          [
+            650,
+            110
+          ]
+        ],
+        "alerts_per_100k": 76.01
+      },
+      "test": {
+        "threshold": 0.12482756486543564,
+        "pr_auc": 0.30352348907196586,
+        "roc_auc": 0.9449957228148036,
+        "precision": 0.36606546426185704,
+        "recall": 0.3510570147341448,
+        "f1": 0.35840418574231525,
+        "fpr": 0.0012483721174969416,
+        "n_alerts": 1497,
+        "n_confirmed_laundering": 548,
+        "n_total": 761751,
+        "n_positive": 1561,
+        "prevalence": 0.0020492260594341194,
+        "confusion_matrix": [
+          [
+            759241,
+            949
+          ],
+          [
+            1013,
+            548
+          ]
+        ],
+        "alerts_per_100k": 196.52
+      }
+    },
+    {
+      "model": "xgboost",
+      "fit_seconds": 11.28,
+      "val": {
+        "threshold": 0.05239101126790047,
+        "pr_auc": 0.16072325255398903,
+        "roc_auc": 0.9639201428056666,
+        "precision": 0.27259036144578314,
+        "recall": 0.2381578947368421,
+        "f1": 0.2542134831460674,
+        "fpr": 0.0006346995361305668,
+        "n_alerts": 664,
+        "n_confirmed_laundering": 181,
+        "n_total": 761750,
+        "n_positive": 760,
+        "prevalence": 0.0009977026583524778,
+        "confusion_matrix": [
+          [
+            760507,
+            483
+          ],
+          [
+            579,
+            181
+          ]
+        ],
+        "alerts_per_100k": 87.17
+      },
+      "test": {
+        "threshold": 0.05239101126790047,
+        "pr_auc": 0.42470978421331423,
+        "roc_auc": 0.9764527532771717,
+        "precision": 0.44,
+        "recall": 0.4509929532351057,
+        "f1": 0.44542866181588103,
+        "fpr": 0.0011786527052447414,
+        "n_alerts": 1600,
+        "n_confirmed_laundering": 704,
+        "n_total": 761751,
+        "n_positive": 1561,
+        "prevalence": 0.0020492260594341194,
+        "confusion_matrix": [
+          [
+            759294,
+            896
+          ],
+          [
+            857,
+            704
+          ]
+        ],
+        "alerts_per_100k": 210.04
+      }
+    },
+    {
+      "model": "lightgbm",
+      "fit_seconds": 13.39,
+      "val": {
+        "threshold": 0.8022272710623358,
+        "pr_auc": 0.13535882402923727,
+        "roc_auc": 0.9511619784062451,
+        "precision": 0.20365853658536584,
+        "recall": 0.21973684210526315,
+        "f1": 0.21139240506329113,
+        "fpr": 0.0008580927476050934,
+        "n_alerts": 820,
+        "n_confirmed_laundering": 167,
+        "n_total": 761750,
+        "n_positive": 760,
+        "prevalence": 0.0009977026583524778,
+        "confusion_matrix": [
+          [
+            760337,
+            653
+          ],
+          [
+            593,
+            167
+          ]
+        ],
+        "alerts_per_100k": 107.65
+      },
+      "test": {
+        "threshold": 0.8022272710623358,
+        "pr_auc": 0.3437875215544766,
+        "roc_auc": 0.969296017224326,
+        "precision": 0.372289156626506,
+        "recall": 0.395900064061499,
+        "f1": 0.3837317603228811,
+        "fpr": 0.0013707099540904248,
+        "n_alerts": 1660,
+        "n_confirmed_laundering": 618,
+        "n_total": 761751,
+        "n_positive": 1561,
+        "prevalence": 0.0020492260594341194,
+        "confusion_matrix": [
+          [
+            759148,
+            1042
+          ],
+          [
+            943,
+            618
+          ]
+        ],
+        "alerts_per_100k": 217.92
+      }
+    }
+  ],
+  "context": {
+    "candidate_test_pr_auc": 0.42470978421331423,
+    "ablation_same_protocol": {
+      "graph_context_no_identity_pr_auc": 0.5548008078184025,
+      "full_with_account_ids_pr_auc": 0.5739926220170071,
+      "identity_lift_forgone": 0.0192,
+      "note": "Candidate uses a strict subset of graph_context (servable, parity-clean). The full_with_account_ids set adds account-id memorisation lift the candidate deliberately forgoes."
+    },
+    "prior_eval_same_protocol": {
+      "test_leader": "lightgbm",
+      "test_leader_pr_auc": 0.6117638585152108,
+      "note": "Same temporal split \u2014 directly comparable; that run included identity + serve/train-only features."
+    },
+    "deployed_baseline": {
+      "model_name": "xgboost",
+      "pr_auc": 0.227455635838831,
+      "protocol": "stratified-random split (legacy)",
+      "note": "NOT directly comparable \u2014 different split protocol. Shown for reference only."
+    }
+  },
+  "excluded_features": [
+    {
+      "canonical_name": "source_bank_code",
+      "parity_status": "definition_mismatch",
+      "identity_memorization_risk": true,
+      "reason": "identity/memorisation risk"
+    },
+    {
+      "canonical_name": "target_bank_code",
+      "parity_status": "definition_mismatch",
+      "identity_memorization_risk": true,
+      "reason": "identity/memorisation risk"
+    },
+    {
+      "canonical_name": "source_account_code",
+      "parity_status": "definition_mismatch",
+      "identity_memorization_risk": true,
+      "reason": "identity/memorisation risk"
+    },
+    {
+      "canonical_name": "target_account_code",
+      "parity_status": "definition_mismatch",
+      "identity_memorization_risk": true,
+      "reason": "identity/memorisation risk"
+    },
+    {
+      "canonical_name": "source_outflow_count_all_time",
+      "parity_status": "train_only",
+      "identity_memorization_risk": false,
+      "reason": "not servable (all-time / no online twin)"
+    },
+    {
+      "canonical_name": "source_outflow_amount_all_time",
+      "parity_status": "train_only",
+      "identity_memorization_risk": false,
+      "reason": "not servable (all-time / no online twin)"
+    },
+    {
+      "canonical_name": "source_unique_targets_all_time",
+      "parity_status": "train_only",
+      "identity_memorization_risk": false,
+      "reason": "not servable (all-time / no online twin)"
+    },
+    {
+      "canonical_name": "target_inflow_count_all_time",
+      "parity_status": "train_only",
+      "identity_memorization_risk": false,
+      "reason": "not servable (all-time / no online twin)"
+    },
+    {
+      "canonical_name": "target_inflow_amount_all_time",
+      "parity_status": "train_only",
+      "identity_memorization_risk": false,
+      "reason": "not servable (all-time / no online twin)"
+    },
+    {
+      "canonical_name": "target_unique_sources_all_time",
+      "parity_status": "train_only",
+      "identity_memorization_risk": false,
+      "reason": "not servable (all-time / no online twin)"
+    },
+    {
+      "canonical_name": "account_pair_count_all_time",
+      "parity_status": "train_only",
+      "identity_memorization_risk": false,
+      "reason": "not servable (all-time / no online twin)"
+    },
+    {
+      "canonical_name": "account_pair_amount_all_time",
+      "parity_status": "train_only",
+      "identity_memorization_risk": false,
+      "reason": "not servable (all-time / no online twin)"
+    },
+    {
+      "canonical_name": "fan_in_count_24h",
+      "parity_status": "train_only",
+      "identity_memorization_risk": false,
+      "reason": "not servable (all-time / no online twin)"
+    },
+    {
+      "canonical_name": "fan_in_normalized_1h",
+      "parity_status": "serve_only",
+      "identity_memorization_risk": false,
+      "reason": "serving-only (no offline twin)"
+    },
+    {
+      "canonical_name": "fan_out_count_24h",
+      "parity_status": "train_only",
+      "identity_memorization_risk": false,
+      "reason": "not servable (all-time / no online twin)"
+    },
+    {
+      "canonical_name": "fan_out_normalized_1h",
+      "parity_status": "serve_only",
+      "identity_memorization_risk": false,
+      "reason": "serving-only (no offline twin)"
+    },
+    {
+      "canonical_name": "sweep_ratio_all_time",
+      "parity_status": "train_only",
+      "identity_memorization_risk": false,
+      "reason": "not servable (all-time / no online twin)"
+    },
+    {
+      "canonical_name": "rolling_amount_ratio_24h",
+      "parity_status": "serve_only",
+      "identity_memorization_risk": false,
+      "reason": "serving-only (no offline twin)"
+    },
+    {
+      "canonical_name": "rapid_movement_flag",
+      "parity_status": "train_only",
+      "identity_memorization_risk": false,
+      "reason": "not servable (all-time / no online twin)"
+    },
+    {
+      "canonical_name": "sweep_after_fan_in_flag",
+      "parity_status": "serve_only",
+      "identity_memorization_risk": false,
+      "reason": "serving-only (no offline twin)"
+    },
+    {
+      "canonical_name": "cross_bank_transfer_count_24h",
+      "parity_status": "serve_only",
+      "identity_memorization_risk": false,
+      "reason": "serving-only (no offline twin)"
+    },
+    {
+      "canonical_name": "account_velocity_zscore",
+      "parity_status": "serve_only",
+      "identity_memorization_risk": false,
+      "reason": "serving-only (no offline twin)"
+    },
+    {
+      "canonical_name": "scatter_gather_score",
+      "parity_status": "serve_only",
+      "identity_memorization_risk": false,
+      "reason": "serving-only (no offline twin)"
+    },
+    {
+      "canonical_name": "simple_cycle_score",
+      "parity_status": "serve_only",
+      "identity_memorization_risk": false,
+      "reason": "serving-only (no offline twin)"
+    },
+    {
+      "canonical_name": "unique_targets_1h",
+      "parity_status": "serve_only",
+      "identity_memorization_risk": false,
+      "reason": "serving-only (no offline twin)"
+    },
+    {
+      "canonical_name": "unique_sources_1h",
+      "parity_status": "serve_only",
+      "identity_memorization_risk": false,
+      "reason": "serving-only (no offline twin)"
+    },
+    {
+      "canonical_name": "new_beneficiary_flag",
+      "parity_status": "serve_only",
+      "identity_memorization_risk": false,
+      "reason": "serving-only (no offline twin)"
+    },
+    {
+      "canonical_name": "beneficiary_age_bucket",
+      "parity_status": "serve_only",
+      "identity_memorization_risk": false,
+      "reason": "serving-only (no offline twin)"
+    },
+    {
+      "canonical_name": "first_seen_delta_bucket",
+      "parity_status": "serve_only",
+      "identity_memorization_risk": false,
+      "reason": "serving-only (no offline twin)"
+    }
+  ]
+}
