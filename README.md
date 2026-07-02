@@ -1,5 +1,4 @@
 <div align="center">
-<div align="center">
 
 <p align="center">
   <img src="./naseejlogo.png" alt="Naseej Logo" width="150">
