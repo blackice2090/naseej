@@ -1,7 +1,11 @@
 <div align="center">
+<div align="center">
+
+<p align="center">
+  <img src="./naseejlogo.png" alt="Naseej Logo" width="150">
+</p>
 
 # نسيج | Naseej
-<img src="./naseejlogo.png" alt="Naseej Logo" width="150">
 **Privacy-preserving cross-bank AML & fraud intelligence for Saudi financial institutions.**
 
 Banks weave a shared defense against money-laundering mule networks — *without ever sharing customer data.*
