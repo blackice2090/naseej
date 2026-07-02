@@ -1,18 +1,78 @@
+<div align="center">
+
 # نسيج | Naseej
 
-**Privacy-preserving cross-bank AML and fraud intelligence for Saudi financial institutions.**  
-Research prototype · Synthetic data (AMLworld) · Not production-ready
+**Privacy-preserving cross-bank AML & fraud intelligence for Saudi financial institutions.**
 
-> **Origin:** the original hackathon concept was inspired by mule-account
-> detection and carried the working title *MuleHunter.AI*. The product name
-> is now **Naseej | نسيج** ("weave") — banks weaving a shared defense
-> without sharing customer data.
+Banks weave a shared defense against money-laundering mule networks — *without ever sharing customer data.*
+
+**Team Madar | فريق مدار · AMAD Hackathon · FinTech Track**
+
+<br>
+
+![React](https://img.shields.io/badge/React-18.3-61DAFB?logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
+![XGBoost](https://img.shields.io/badge/XGBoost-baseline_model-FF6600)
+![Privacy by Design](https://img.shields.io/badge/Privacy-by--design-2E7D32)
+![Synthetic Data](https://img.shields.io/badge/Data-Synthetic_AMLworld-6A1B9A)
+![Tests](https://img.shields.io/badge/tests-565%20passing-brightgreen)
+![Status](https://img.shields.io/badge/status-research%20prototype-orange)
+
+</div>
+
+> [!IMPORTANT]
+> **Naseej is a research prototype.** It is trained and evaluated on **synthetic data only** (IBM AMLworld) and is **not production-ready**, **not certified**, and **not validated on real Saudi banking transactions**. All privacy and compliance claims are *by-design* properties demonstrated in a prototype — not formal certifications.
+
+> **Origin:** the original hackathon concept was inspired by mule-account detection and carried the working title *MuleHunter.AI*. The product name is now **Naseej | نسيج** ("weave") — banks weaving a shared defense without sharing customer data.
 
 ---
 
-## Problem Statement
+## Table of Contents
 
-Money-laundering mule accounts move stolen funds across multiple banks faster than any single institution can detect them. Each bank sees only its own slice of the transaction chain. Sharing raw customer data to fill this gap violates SDAIA PDPL and SAMA confidentiality requirements.
+- [Overview](#overview)
+- [Problem](#problem)
+- [Solution](#solution)
+- [Key Features](#key-features)
+- [Demo Screenshots](#demo-screenshots)
+- [Demo Flow](#demo-flow)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+- [Dataset](#dataset)
+- [ML Validation](#ml-validation)
+- [Model Governance & Advanced ML](#model-governance--advanced-ml)
+- [Privacy & Compliance](#privacy--compliance)
+- [How to Run](#how-to-run)
+- [API Overview](#api-overview)
+- [Tests](#tests)
+- [Documentation](#documentation)
+- [Limitations](#limitations)
+- [Roadmap](#roadmap)
+- [Team](#team)
+- [References & Dataset Source](#references--dataset-source)
+- [License & Prototype Disclaimer](#license--prototype-disclaimer)
+
+---
+
+## Overview
+
+Naseej lets banks share **fraud intelligence** without sharing **customer data**.
+
+When one bank detects a suspicious transaction topology — a fan-in velocity pattern, a rapid sweep, a cross-bank pass-through — it detects the pattern *locally*, converts it into a **zero-PII cryptographic pattern hash**, and broadcasts only that hash. Any other bank can match the hash against its own incoming transactions and flag look-alike patterns for analyst review. No customer names, IBANs, national IDs, phone numbers, or account identifiers ever cross the bank boundary.
+
+The repository contains a working end-to-end prototype:
+
+- a **React + Vite** browser demo (`naseej-ai/`) that visualizes a live cross-bank attack and detection,
+- a **FastAPI** backend (`backend/`) exposing scoring, pattern-registry, case-management, feature-store, explainability, and governance endpoints,
+- a real **XGBoost** ML pipeline (`ml/`) trained on the IBM AMLworld synthetic AML dataset, plus a privacy-hash engine, evaluation suite, and feature-parity tooling.
+
+---
+
+## Problem
+
+Money-laundering mule accounts move stolen funds across multiple banks faster than any single institution can detect them. Each bank sees only its own slice of the transaction chain. Sharing raw customer data to fill this gap violates **SDAIA PDPL** and **SAMA** confidentiality requirements.
 
 **The result:** coordinated fraud that spans institutions is systematically under-detected.
 
@@ -20,9 +80,7 @@ Money-laundering mule accounts move stolen funds across multiple banks faster th
 
 ## Solution
 
-Naseej lets banks share fraud intelligence without sharing customer data.
-
-When Bank A detects a suspicious transaction topology — a fan-in velocity pattern, a rapid sweep, a cross-bank pass-through — it generates a **cryptographic pattern hash** that encodes only the structural shape of the fraud, not the identities involved. Bank B can match its own incoming transactions against that hash and flag matching patterns for analyst review.
+Naseej detects the pattern locally, anonymizes it into a structural hash, and shares only the hash — so other banks gain the signal without receiving any customer data.
 
 ```
 Bank A                               Naseej Network              Bank B
@@ -37,281 +95,154 @@ Privacy Hash Engine
 NSJ_MULE_VELOCITY_deadbeef...
 ```
 
-**Zero PII crosses the bank boundary.** No customer names, IBANs, national IDs, account numbers, or phone numbers are transmitted.
+**Zero PII crosses the bank boundary.** The hash encodes only the *shape* of the fraud — degree sequences, bucketed amounts, pattern type — never the identities of the accounts involved.
+
+---
+
+## Key Features
+
+| Capability | What it does |
+|---|---|
+| 🔐 **Zero-PII pattern hashing** | Converts a fraud topology into an `NSJ_<TYPE>_<hash>` fingerprint using SHA-256 over canonical, bucketed features. Verified by 136 automated privacy tests. |
+| 🧠 **Real ML scoring** | XGBoost model trained on IBM AMLworld, served via `/api/score-transaction`, reporting honest PR-AUC / precision / recall metrics. |
+| 🕸️ **Graph analytics** | Detects 8 AML typologies (fan-in velocity, rapid sweep, cross-bank pass-through, …) from local transaction graphs. |
+| 🔁 **Cross-bank matching** | Bank B matches broadcast hashes against its own traffic and flags look-alikes for analyst review. |
+| 🧑‍⚖️ **Human-in-the-loop cases** | Investigator dashboard with a risk queue, "Why flagged?" explanations, RBAC decision ladder, PII-guarded notes, and an append-only audit trail. |
+| 🧾 **Explainability** | PII-safe "Why flagged?" attributions using SHAP (with a deterministic fallback), served for transactions, cases, and the model. |
+| 🛡️ **Governance evidence** | Read-only endpoints report demo readiness, zero-PII guarantees, and honest "what is real vs simulated" statements for reviewers. |
+| 🔑 **Node auth & RBAC** | Per-node API keys, sharing scopes (`local_only` / `bilateral` / `network_all` / `regulator_only`), and a role ladder (analyst → senior → MLRO). |
+
+---
+
+## Demo Screenshots
+
+The live demo runs entirely in the browser. The sequence below walks through a full cross-bank mule attack — from idle banks, to detection in Bank A, to a zero-PII hash arriving at Bank B and blocking the accomplice transaction.
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="./Naseejscreenshot/Interface%20before%20running.png" alt="Naseej interface with both banks idle before the simulation runs" width="100%">
+      <p align="center"><b>01 · Interface before running</b><br>Both banks process normal traffic; live API status shown in the research strip.</p>
+    </td>
+    <td width="50%" valign="top">
+      <img src="./Naseejscreenshot/Attack%20in%20Bank%20A.png" alt="A mule attack unfolding inside Bank A" width="100%">
+      <p align="center"><b>02 · Attack in Bank A</b><br>Micro-transfers fan into a mule account, followed by an international wire sweep.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="./Naseejscreenshot/Graph%20Analytics%20%26%20alert.png" alt="Bank A graph analytics raising a velocity-breach alert" width="100%">
+      <p align="center"><b>03 · Graph Analytics &amp; alert</b><br>Bank A graph analytics flags the coordinated velocity breach; the mule node turns red.</p>
+    </td>
+    <td width="50%" valign="top">
+      <img src="./Naseejscreenshot/Pattern%20Hash%20reveal.png" alt="The zero-PII pattern hash being revealed on screen" width="100%">
+      <p align="center"><b>04 · Pattern Hash reveal</b><br>The detection is encoded into an <code>NSJ_*</code> zero-PII pattern hash.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="./Naseejscreenshot/Hash%20arriving%20at%20Bank%20B.png" alt="The pattern hash arriving at Bank B" width="100%">
+      <p align="center"><b>05 · Hash arriving at Bank B</b><br>Only the anonymized hash crosses the boundary; Bank B matches it against its own traffic.</p>
+    </td>
+    <td width="50%" valign="top">
+      <img src="./Naseejscreenshot/Blocked%20in%20Bank%20B.png" alt="A matching transaction being flagged and blocked in Bank B" width="100%">
+      <p align="center"><b>06 · Blocked / Flagged in Bank B</b><br>Bank B flags the matching accomplice transaction for analyst review.</p>
+    </td>
+  </tr>
+</table>
+
+▶ **Full walkthrough:** [90-second walkthrough of Naseej MVP](./Naseejscreenshot/90-second%20walkthrough%20of%20Naseej%20MVP.mp4) *(video file in `./Naseejscreenshot/`)*
 
 ---
 
 ## Demo Flow
 
-The live demo runs entirely in the browser. Backend connection enriches the data cards but is not required for the simulation.
+The live demo runs entirely in the browser. A backend connection enriches the data cards but is **not** required for the simulation.
 
 | Stage | What you see |
 |-------|-------------|
 | **IDLE** | Both banks process normal transactions at 1.2s intervals |
 | **ATTACK** | Click **RUN SIMULATION** — 5 micro-transfers fan into a mule account, followed by an international wire sweep |
-| **DETECTED** | Bank A graph analytics flags the coordinated velocity breach; mule node turns red |
+| **DETECTED** | Bank A graph analytics flags the coordinated velocity breach; the mule node turns red |
 | **BROADCASTING** | A `NSJ_*` hash typewriter-decodes on screen; particles flow Bank A → Bank B |
 | **FLAGGED** | Bank B shakes and stamps FLAGGED on a matching accomplice transaction for analyst review |
 
 Click **RESET DEMO** to restart at any point.
 
-When the flag fires, the detection becomes an analyst case: switch to the
-**INVESTIGATOR** tab in the top nav to triage it — risk queue, "Why
-flagged?" explanation, recommended action, attributed decisions, PII-guarded
-notes, and the audit trail. With the backend live this runs through the real
-case API; offline it falls back to clearly-labelled mock cases. The system
-recommends — a human decides (see `docs/CASE_MANAGEMENT.md`).
+When the flag fires, the detection becomes an analyst case: switch to the **INVESTIGATOR** tab in the top nav to triage it — risk queue, "Why flagged?" explanation, recommended action, attributed decisions, PII-guarded notes, and the audit trail. With the backend live this runs through the real case API; offline it falls back to clearly-labelled mock cases. **The system recommends — a human decides** (see [`docs/CASE_MANAGEMENT.md`](docs/CASE_MANAGEMENT.md)).
 
 ---
 
-## Architecture (Text Diagram)
+## Tech Stack
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│ naseej-ai/ (React 18 + Vite — modular: config/ data/ lib/ hooks/    │
-│             components/{ui,graph,panels})                           │
-│  ┌──────────────────────────┐  ┌──────────────────────────────────┐ │
-│  │ MLValidationCard         │  │ ResearchStrip                    │ │
-│  │ live from /api/model/... │  │ cross-bank | score | pattern     │ │
-│  └──────────────────────────┘  └──────────────────────────────────┘ │
-│  ┌───────────────────────┐  ┌───────────────────────┐               │
-│  │ BankAPanel            │  │ BankBPanel             │               │
-│  │ GraphView · HashDisplay│  │ IntelFeed · BlockedStamp│            │
-│  └───────────────────────┘  └───────────────────────┘               │
-└───────────────────────────────┬─────────────────────────────────────┘
-                                │ fetch (localhost:8000, 2.5s timeout)
-┌───────────────────────────────▼─────────────────────────────────────┐
-│ backend/ (FastAPI + Uvicorn :8000)                                  │
-│  GET  /api/model/metrics         — XGBoost test metrics    (public) │
-│  GET  /api/model/comparison      — LightGBM vs XGBoost …   (public) │
-│  GET  /api/model/per-typology-recall — recall by typology  (public) │
-│  GET  /api/model/threshold-analysis  — operating points    (public) │
-│  GET  /api/model/ablation-report — feature ablation        (public) │
-│  GET  /api/model/feature-contract — offline/online contract (public)│
-│  GET  /api/model/feature-parity  — parity report           (public) │
-│  GET  /api/model/training-feature-manifest — approved feats (public)│
-│  GET  /api/model/candidate/* — shadow candidate reports    (public) │
-│  POST /api/model/candidate/score-shadow — candidate vs base(node key)│
-│  GET  /api/model/candidate/shadow-monitoring — aggregates  (node key)│
-│  GET  /api/model/candidate/calibration-readiness          (public)  │
-│  GET  /api/model/candidate/calibration-status             (public)  │
-│  POST /api/feedback/from-case/{id} — closed-case label   (node key) │
-│  GET  /api/feedback[/calibration-dataset] — node-scoped  (node key) │
-│  GET  /api/demo/health           — demo readiness check    (public) │
-│  GET  /api/demo/governance-evidence — governance pack      (public) │
-│  GET  /api/demo/judge-summary    — judge brief             (public) │
-│  GET  /api/cross-bank/results    — 4-bank experiment       (public) │
-│  POST /api/score-transaction     — XGBoost inference     (node key) │
-│  POST /api/analyze-pattern       — Patterns + privacy hash (node key)│
-│  POST /api/patterns              — register threat pattern (node key)│
-│  GET  /api/patterns[/{id}]       — query pattern registry (node key)│
-│  POST /api/cases/from-pattern/{id} — open analyst case    (node key)│
-│  GET/PATCH/POST /api/cases/...   — case lifecycle, notes, decisions │
-│  POST /api/features/ingest-transaction — feed node-local windows    │
-│  GET  /api/features/account/{id} — velocity features      (node key)│
-│  POST /api/features/score-with-context — model + rule layer         │
-│  POST /api/explain/transaction   — Why flagged? (SHAP)   (node key) │
-│  GET  /api/explain/case/{id}     — case explanation      (node key) │
-│  GET  /api/explain/model         — model evidence summary  (public) │
-│  GET  /api/auth/whoami           — node, role, permissions(node key)│
-│  Gates: auth → role/permissions → sharing scope → JSON Schema →     │
-│         zero-PII guard → audit log                                  │
-└───────────────────────────────┬─────────────────────────────────────┘
-                                │ imports
-┌───────────────────────────────▼─────────────────────────────────────┐
-│ ml/ (Python — models, reports, privacy engine)                      │
-│  baseline_model.joblib           — XGBoost (32 features)            │
-│  ml/src/privacy_hash.py          — NSJ_<TYPE>_<16hex> hashes        │
-│  ml/src/pattern_library.py       — 8 AML pattern detectors          │
-│  ml/src/cross_bank_experiment.py — 3-scenario recall proof          │
-│  ml/src/evaluation_suite.py      — LightGBM/typology/ablation eval  │
-│  ml/src/feature_contract.py      — canonical offline/online contract│
-│  ml/src/feature_parity_check.py  — replay harness + parity checker  │
-│  ml/reports/*.json               — live metrics served by backend   │
-└─────────────────────────────────────────────────────────────────────┘
-```
+Only technologies actually present in the repository are listed (verified against `naseej-ai/package.json`, `backend/requirements.txt`, and the `ml/` source).
+
+| Layer | Technologies |
+|---|---|
+| **Frontend** | React 18.3 · Vite 5.4 · Tailwind CSS 3.4 · Framer Motion 12 · Lucide React · PostCSS · Autoprefixer |
+| **Backend** | FastAPI 0.115 · Uvicorn · Pydantic v2 · jsonschema · python-multipart · Python 3.11 |
+| **ML** | XGBoost *(deployed baseline)* · LightGBM *(optional, evaluation suite)* · scikit-learn · Pandas · NumPy · NetworkX · joblib · SHAP *(optional)* |
+| **Privacy** | SHA-256 · canonical JSON · value bucketing · fail-closed zero-PII guard |
+| **Data** | IBM AMLworld HI-Small (synthetic AML dataset) |
+| **Testing** | pytest · FastAPI TestClient · httpx |
+| **Documentation** | Markdown docs (`docs/`) · FastAPI OpenAPI docs at `/docs` |
 
 ---
 
-## How to Run
+## Architecture
 
-### Prerequisites
+Naseej is a three-tier prototype with an explicit **privacy boundary** between banks. Each layer is designed so that PII never leaves the bank that owns it.
 
-- Node.js ≥ 18
-- Python 3.11+
-- Packages: `pip install -r backend/requirements.txt`
-
-All commands run from the repository root (`C:\Users\...\Naseej\`).
-
-### Frontend (demo only — no backend needed)
-
-```bash
-cd naseej-ai
-npm install
-npm run dev
-# Opens at http://localhost:5173
+```
+┌──────────────────────────────────────────────────────────────┐
+│  FRONTEND  ·  naseej-ai/ (React 18 + Vite)                    │
+│  BankAPanel · BankBPanel · GraphView · HashDisplay ·         │
+│  MLValidationCard · Investigator dashboard                    │
+└───────────────────────────────┬──────────────────────────────┘
+                                │  fetch → localhost:8000 (2.5s timeout)
+┌───────────────────────────────▼──────────────────────────────┐
+│  BACKEND  ·  backend/ (FastAPI + Uvicorn :8000)               │
+│  Gates: auth → role/permissions → sharing scope →            │
+│         JSON Schema → zero-PII guard → audit log              │
+└───────────────────────────────┬──────────────────────────────┘
+                                │  imports
+┌───────────────────────────────▼──────────────────────────────┐
+│  ML  ·  ml/ (Python)                                          │
+│  baseline_model.joblib (XGBoost) · privacy_hash.py ·         │
+│  pattern_library.py (8 detectors) · evaluation_suite.py ·    │
+│  feature_contract.py · reports/*.json (served by backend)    │
+└──────────────────────────────────────────────────────────────┘
 ```
 
-The demo simulation runs entirely in the browser. If the backend is not running, metric cards show fallback values and the `API OFFLINE` indicator appears in the research strip.
-
-### Backend (enriches the four data cards)
-
-```bash
-# Windows PowerShell
-uvicorn backend.app.main:app --reload --port 8000
-
-# Bash (Linux / macOS / Git Bash)
-uvicorn backend.app.main:app --reload --port 8000
-```
-
-Or use the included helper scripts:
-
-```bash
-# PowerShell
-.\scripts\run_backend.ps1
-
-# Bash
-bash scripts/run_backend.sh
-```
-
-### Judge / hackathon demo
-
-Run the frontend (and backend for live strips), then follow
-[`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) — a speakable 5-minute flow. The
-consolidated proof points are in [`docs/JUDGE_EVIDENCE_PACK.md`](docs/JUDGE_EVIDENCE_PACK.md),
-and three public read-only endpoints expose them live:
-
-```bash
-curl localhost:8000/api/demo/health              # ready | partial | unavailable (+ checks, demo_safe)
-curl localhost:8000/api/demo/governance-evidence # zero-PII, HITL, audit, RBAC, shadow-only, calibration
-curl localhost:8000/api/demo/judge-summary       # problem/solution, real vs simulated, top differentiators
-```
-
-These carry no raw transactions, identifiers, or PII, and make **no** certified
-or production-ready claims — **PDPL-by-design** and **SAMA-aligned prototype**
-only. **Naseej is a research prototype on synthetic AMLworld data — not
-production validation, not certified, not production-ready.**
-
-API documentation: `http://localhost:8000/docs`
-
-### API authentication (bank-node keys, roles, partitioning)
-
-Scoring, pattern analysis, the pattern registry, and cases require an
-`X-API-Key` header that maps to a registered node id. Health and read-only
-research stats stay public.
-
-```bash
-# Configure real keys (NODE_ID:key pairs — disables the dev keys entirely)
-export NASEEJ_NODE_KEYS="NODE_A7C2F9E1:your-secret-a,NODE_B3D8E2F4:your-secret-b"
-
-# Optional: override node profiles (type, roles, capabilities) as JSON
-export NASEEJ_NODE_PROFILES='{"NODE_A7C2F9E1": {"default_role": "senior_analyst"}}'
-```
-
-Each authenticated node resolves to a server-side profile — node type
-(bank/regulator/admin), allowed analyst roles, and capability flags. Banks
-see only their own cases and only the patterns their sharing scope allows
-(`local_only` / `bilateral` / `network_all` / `regulator_only`); case
-decisions are role-gated (analyst → senior_analyst → MLRO), and the acting
-role comes from the auth context, never from request bodies. Check your
-identity with `GET /api/auth/whoami`.
-
-When `NASEEJ_NODE_KEYS` is **unset**, three clearly-labelled dev keys are
-active so the local demo works with zero setup: Bank A (analyst),
-`dev-key-bank-b-local-only` (Bank B, MLRO), and
-`dev-key-regulator-local-only` (read-only regulator). The frontend sends
-`dev-key-bank-a-local-only` by default; override with `VITE_NASEEJ_API_KEY`:
-
-```bash
-# 401 — no key
-curl -X POST localhost:8000/api/score-transaction -H "Content-Type: application/json" -d '{...}'
-
-# 200 — local simulation
-curl -X POST localhost:8000/api/score-transaction \
-  -H "Content-Type: application/json" -H "X-API-Key: dev-key-bank-a-local-only" -d '{...}'
-
-# Register a threat pattern (schema + zero-PII gates enforced, audited)
-curl -X POST localhost:8000/api/patterns \
-  -H "Content-Type: application/json" -H "X-API-Key: dev-key-bank-a-local-only" \
-  -d @docs/examples/threat_pattern_example.json
-```
-
-Every request to a protected endpoint is appended to the hash-chained audit
-log at `backend/data/audit/audit.jsonl` (override: `NASEEJ_AUDIT_LOG`).
-The registry persists to `backend/data/patterns.jsonl` (override:
-`NASEEJ_REGISTRY_PATH`) and cases to `backend/data/cases.jsonl` (override:
-`NASEEJ_CASES_PATH`). Details: [`docs/SECURITY_COMPLIANCE.md`](docs/SECURITY_COMPLIANCE.md).
-
-### Tests
-
-```bash
-# From repo root — runs all 565 tests
-python -m pytest backend/tests ml/tests -v
-
-# Individual suites
-python -m pytest ml/tests/test_privacy_hash.py -v          # 136 privacy-hash tests
-python -m pytest backend/tests/test_access_control.py -v   # sharing scopes, ownership, RBAC
-python -m pytest backend/tests/test_cases.py -v            # case lifecycle + transitions
-python -m pytest backend/tests/test_pattern_registry.py -v # registry gates + audit
-python -m pytest backend/tests/test_pii_guard.py -v        # zero-PII guard (Arabic/IBAN/phone)
-python -m pytest backend/tests/test_auth.py -v             # node-key authentication
-python -m pytest backend/tests/test_audit_service.py -v    # append-only hash chain
-python -m pytest backend/tests/test_score_endpoint.py -v   # scoring endpoint
-python -m pytest backend/tests/test_privacy_service.py -v  # endpoint PII safety
-python -m pytest backend/tests/test_feature_store.py -v    # velocity windows + node isolation
-```
-
-### Train the baseline model (optional — model already included)
-
-The trained model is already at `ml/models/baseline_model.joblib`. To retrain:
-
-```bash
-python -m ml.src.train_baseline \
-    --input ml/data/features/train_features.parquet \
-    --output ml/models/baseline_model.joblib \
-    --sample 300000
-
-# Outputs: ml/models/baseline_model.joblib
-#          ml/reports/model_metrics.json
-#          ml/reports/confusion_matrix.json
-#          ml/reports/feature_importance.json
-#          ml/reports/training_summary.md
-```
-
-Run the cross-bank experiment:
-
-```bash
-python -m ml.src.cross_bank_experiment
-
-# Outputs: ml/reports/cross_bank_results.json
-#          ml/reports/cross_bank_summary.md
-```
-
-### Run the ML evaluation suite (LightGBM, typology recall, ablation)
-
-Separate from the deployed baseline above — this evaluates competitors on a
-temporal split with point-in-time features and **does not touch**
-`model_metrics.json` or `baseline_model.joblib`. See
-[`docs/MODEL_EVALUATION.md`](docs/MODEL_EVALUATION.md).
-
-```bash
-python -m ml.src.evaluation_suite --train-sample 800000 --seed 42
-
-# Outputs (served read-only at /api/model/*):
-#   ml/reports/model_comparison.{json,md}      — LightGBM vs XGBoost vs RF vs LR
-#   ml/reports/per_typology_recall.{json,md}   — recall by AML typology (heuristic labels)
-#   ml/reports/threshold_analysis.{json,md}    — high-precision / balanced / high-recall modes
-#   ml/reports/ablation_report.{json,md}       — transaction-only vs graph vs graph+context
-```
-
-LightGBM is optional: if it is not installed the suite skips it with a
-recorded reason and reports the remaining models — results are never faked.
+| Layer | Responsibility |
+|---|---|
+| **Frontend layer** | Browser-only demo simulation, live metric cards, and the investigator workspace. Modular structure: `config/ data/ lib/ hooks/ components/{ui,graph,panels}`. |
+| **Backend layer** | FastAPI service that mediates every protected action through a fixed gate chain (auth → RBAC → sharing scope → schema → PII guard → audit). |
+| **ML layer** | XGBoost baseline, 8-typology pattern library, evaluation suite (LightGBM/RF/LR comparison), and feature-contract/parity tooling. Reports are served read-only. |
+| **Privacy layer** | The zero-PII guard, SHA-256 pattern hashing, value bucketing, and the hash-chained audit log — the enforcement points on the bank boundary. |
+| **API layer** | Node-key authenticated endpoints for scoring, patterns, cases, features, explanations, feedback, and public governance/evidence reports (see [API Overview](#api-overview)). |
 
 ---
 
-## Key ML Metrics
+## Dataset
 
-Trained on AMLworld HI-Small (IBM synthetic AML dataset, 475 MB). **Synthetic data only — not validated on real Saudi banking transactions.**
+| | |
+|---|---|
+| **Source** | IBM / Kaggle public release |
+| **Reference** | [IBM Transactions for Anti Money Laundering (AML)](https://www.kaggle.com/datasets/ealtman2019/ibm-transactions-for-anti-money-laundering-aml) |
+| **Type** | Synthetic financial transactions generated for AML research |
+| **Subset used** | AMLworld **HI-Small** (~475 MB) |
+| **Label** | `Is Laundering` (0/1) |
+
+**Why synthetic data?** It enables privacy-safe MVP validation with **no real customer data**. This is deliberate for a prototype: it lets Naseej demonstrate the detection-and-sharing mechanism without touching regulated personal information.
+
+> ⚠️ **Disclaimer:** all reported numbers are **synthetic-benchmark results** on AMLworld — they are **not** production performance and have **not** been validated on real Saudi banking data.
+
+---
+
+## ML Validation
+
+Trained on AMLworld HI-Small (IBM synthetic AML dataset). **Synthetic data only — not validated on real Saudi banking transactions.**
 
 | Metric | Value |
 |--------|-------|
@@ -329,7 +260,7 @@ Trained on AMLworld HI-Small (IBM synthetic AML dataset, 475 MB). **Synthetic da
 | Alerts raised on test set | 33 |
 | Laundering cases caught | 9 / 46 (20%) |
 
-**Why PR-AUC?** At 0.102% prevalence, accuracy is misleading. PR-AUC measures the area under the precision-recall curve — the right metric when positive cases are rare and every catch matters.
+**Why PR-AUC, not accuracy?** At 0.102% prevalence, accuracy is misleading — a model that flags nothing is >99.8% "accurate." PR-AUC measures the area under the precision-recall curve, the right metric when positive cases are rare and every catch matters. **Human review is required before any production blocking decision.**
 
 ### Evaluation suite findings (temporal split — separate protocol, not directly comparable)
 
@@ -342,111 +273,9 @@ A later evaluation phase ([`docs/MODEL_EVALUATION.md`](docs/MODEL_EVALUATION.md)
 | Strongest typology | rapid_sweep (recall 0.76), cross_bank_pass_through (0.56) |
 | Weakest typology | `mule_velocity` (recall 0.05) — heuristic label |
 
-The context-feature ablation is the key result: **graph and point-in-time context features drive almost all detection skill.** These numbers use a different split protocol than the deployed baseline above, so they are *not directly comparable* with the 0.2275 figure — and remain synthetic-benchmark only.
+The context-feature ablation is the key result: **graph and point-in-time context features drive almost all detection skill.** These numbers use a different split protocol than the deployed baseline above, so they are *not directly comparable* with the 0.2275 figure — and remain synthetic-benchmark only. Typology labels are **heuristic** (inferred from a pattern library, not ground truth).
 
----
-
-## Feature reconciliation — offline/online parity ([docs/FEATURE_CONTRACT.md](docs/FEATURE_CONTRACT.md))
-
-Before any retrain/GNN, a canonical **feature contract** reconciles the offline
-training features with the online feature-store features, and a **replay harness
-+ parity checker** (four deterministic scenarios) prove they agree point-in-time:
-
-- 8 windowed count/amount features match offline↔online exactly across all
-  scenarios (`parity_targets_clean: true`).
-- **Name collisions resolved (contract v2):** the online store now emits
-  `fan_in_normalized_1h`/`fan_out_normalized_1h`; the offline 24h integer counts
-  keep their legacy names under canonical `fan_in_count_24h`/`fan_out_count_24h`.
-  The contract self-checks `collisions_resolved: true`.
-- The **training manifest** approves **15** parity-clean, servable, non-memorising
-  features and **excludes 29** — account/bank-id encodings (memorisation,
-  permanently excluded; `is_cross_bank` is the structural replacement), all-time
-  cumulatives (no 30d online twin), and serve-only graph/context features. Served
-  at `/api/model/{feature-contract,feature-parity,training-feature-manifest}`.
-
-```bash
-python -m ml.src.feature_contract        # regenerate ml/features/feature_contract.json
-python -m ml.src.feature_parity_check     # regenerate parity + training-manifest reports
-```
-
-**GNN stays blocked** until the approved set is parity-clean end to end.
-
----
-
-## Shadow candidate model ([docs/CANDIDATE_MODEL.md](docs/CANDIDATE_MODEL.md))
-
-A clean-room candidate trained on **only** the 15 approved parity-clean features
-(no account/bank identity encodings, no serve-only or all-time features). It is
-a **shadow evaluation — never deployed**; `baseline_model.joblib` and
-`model_metrics.json` are never overwritten.
-
-- Selected by validation PR-AUC: **XGBoost**, held-out test **PR-AUC 0.4247**,
-  F1 0.4454 (LightGBM/RF/LogReg also evaluated).
-- Below the identity-using ablation (`full_with_account_ids` 0.574) — the honest
-  cost of excluding serve-only graph features and identity memorisation.
-- SHAP explanations resolve through the feature contract; bucketed, PII-safe.
-- Served read-only at `/api/model/candidate/{metrics,comparison,thresholds,explainability-check}`;
-  a small **SHADOW ONLY** card appears in the demo when reports are present.
-
-**Live shadow scoring** (`POST /api/model/candidate/score-shadow`, node auth):
-runs the candidate beside the deployed baseline on the online feature path and
-returns candidate vs baseline score + agreement — **comparison-only**. It never
-creates a case, blocks/approves, or affects `/api/score-transaction`. Missing
-candidate or no node history → safe `candidate_unavailable` / `missing_feature`.
-Every request is audited (metadata only). Readiness:
-`ml/reports/candidate_shadow_readiness.{json,md}`.
-
-```bash
-python -m ml.src.train_candidate_model --train-sample 800000 --seed 42
-python -m ml.src.candidate_shadow_readiness   # regenerate the readiness report
-```
-
-**Shadow monitoring** ([docs/SHADOW_MONITORING.md](docs/SHADOW_MONITORING.md)):
-each shadow score writes a **bucketed, PII-safe** observation (no raw
-transactions/identifiers/values). `GET /api/model/candidate/shadow-monitoring`
-(node auth, node-scoped) returns last-1h/24h/all aggregates — agreement rate,
-candidate vs baseline alert rates, missing-feature rate, risk-tier transition
-matrix — plus a **prototype drift signal** (normal / watch / unavailable).
-`GET /api/model/candidate/calibration-readiness` (public) states the candidate
-is **not calibrated** (no real labels in shadow mode) and **not** recommended
-for deployment. A small **PROTOTYPE MONITORING — NO DEPLOYMENT DECISION** row
-appears in the demo when observations exist.
-
-**Analyst feedback loop** ([docs/ANALYST_FEEDBACK_LOOP.md](docs/ANALYST_FEEDBACK_LOOP.md)):
-closing a case turns its outcome into a bucketed, PII-safe **calibration label**
-(`closed_confirmed → confirmed_fraud`, etc.) via `POST /api/feedback/from-case/{id}`
-(closed cases only; visibility/RBAC enforced; auto-captured on closure in the
-demo). `GET /api/feedback/calibration-dataset` (node-scoped) aggregates labels;
-below a minimum threshold it returns `insufficient_labels` and **never fakes**
-calibration metrics. The candidate stays uncalibrated and undeployed —
-**CALIBRATION DATASET — NOT PRODUCTION CALIBRATION**.
-
-**Deployment not recommended** — synthetic benchmark only; the deployed model is untouched.
-
----
-
-## Explainability — "Why flagged?" ([docs/EXPLAINABILITY.md](docs/EXPLAINABILITY.md))
-
-Analyst-readable, **PII-safe** explanations for the Investigator Dashboard,
-served by `backend/app/services/explanation_service.py`:
-
-- `POST /api/explain/transaction` — base-model attribution (**SHAP** TreeExplainer
-  on the deployed XGBoost when available; deterministic feature-importance +
-  rule **fallback** otherwise) plus the contextual rule layer.
-- `GET /api/explain/case/{id}` — typology rationale + bucketed evidence for a
-  case (visibility + RBAC enforced, audited).
-- `GET /api/explain/model` — evaluation-report summary (best/test-leader model,
-  weakest typology, threshold policy, limitations), public.
-
-Every factor shows a coarse `value_bucket` and a direction (`increases_risk` /
-`decreases_risk`), **never raw amounts, account ids, or payloads**. A final PII
-guard scrubs the whole payload so `pii_safe` is always truthful. Explanations
-are decision-support only — not a legal/regulatory sufficiency statement, and
-the deployed model is not retrained.
-
----
-
-## Cross-Bank Experiment Results
+### Cross-bank experiment
 
 39,990 transactions split across 4 simulated banks. XGBoost trained and evaluated under three scenarios per bank.
 
@@ -466,13 +295,68 @@ the deployed model is not retrained.
 
 Naseej achieves **500% of the shared-model recall gain at zero PII cost**.
 
-> These results use simulated bank partitions of the same synthetic dataset. Real multi-bank results require independent validation.
+> These results use *simulated* bank partitions of the same synthetic dataset. Real multi-bank results require independent validation.
 
 ---
 
-## Zero-PII Privacy Guarantee
+## Model Governance & Advanced ML
 
-Every pattern hash produced by Naseej passes the `verify_zero_pii()` check, which is proved by 136 automated tests. The following fields are **never included in any hash or API response**:
+Beyond the deployed baseline, the repository includes honest-by-design ML engineering and governance tooling. None of the below changes the deployed model — the baseline and its metrics are never overwritten.
+
+<details>
+<summary><b>Feature reconciliation — offline/online parity</b> (<a href="docs/FEATURE_CONTRACT.md">docs/FEATURE_CONTRACT.md</a>)</summary>
+
+A canonical **feature contract** reconciles the offline training features with the online feature-store features, and a **replay harness + parity checker** (four deterministic scenarios) prove they agree point-in-time:
+
+- 8 windowed count/amount features match offline↔online exactly across all scenarios (`parity_targets_clean: true`).
+- **Name collisions resolved (contract v2):** the online store emits `fan_in_normalized_1h`/`fan_out_normalized_1h`; the offline 24h integer counts keep their legacy names under canonical `fan_in_count_24h`/`fan_out_count_24h`.
+- The **training manifest** approves **15** parity-clean, servable, non-memorising features and **excludes 29** — account/bank-id encodings (memorisation; `is_cross_bank` is the structural replacement), all-time cumulatives, and serve-only graph/context features.
+
+**GNN stays blocked** until the approved set is parity-clean end to end.
+
+</details>
+
+<details>
+<summary><b>Shadow candidate model</b> (<a href="docs/CANDIDATE_MODEL.md">docs/CANDIDATE_MODEL.md</a>)</summary>
+
+A clean-room candidate trained on **only** the 15 approved parity-clean features (no identity encodings, no serve-only or all-time features). It is a **shadow evaluation — never deployed**; `baseline_model.joblib` and `model_metrics.json` are never overwritten.
+
+- Selected by validation PR-AUC: **XGBoost**, held-out test **PR-AUC 0.4247**, F1 0.4454.
+- Below the identity-using ablation (`full_with_account_ids` 0.574) — the honest cost of excluding serve-only graph features and identity memorisation.
+- **Live shadow scoring** (`POST /api/model/candidate/score-shadow`) runs the candidate beside the baseline — comparison-only; it never creates a case, blocks/approves, or affects `/api/score-transaction`.
+- **Shadow monitoring** ([`docs/SHADOW_MONITORING.md`](docs/SHADOW_MONITORING.md)) records bucketed, PII-safe observations and a prototype drift signal. The candidate is **not calibrated** and **not recommended for deployment**.
+
+</details>
+
+<details>
+<summary><b>Analyst feedback loop</b> (<a href="docs/ANALYST_FEEDBACK_LOOP.md">docs/ANALYST_FEEDBACK_LOOP.md</a>)</summary>
+
+Closing a case turns its outcome into a bucketed, PII-safe **calibration label** (`closed_confirmed → confirmed_fraud`, etc.). Below a minimum threshold the calibration dataset returns `insufficient_labels` and **never fakes** calibration metrics. The candidate stays uncalibrated and undeployed — **calibration dataset, not production calibration**.
+
+</details>
+
+<details>
+<summary><b>Explainability — "Why flagged?"</b> (<a href="docs/EXPLAINABILITY.md">docs/EXPLAINABILITY.md</a>)</summary>
+
+Analyst-readable, **PII-safe** explanations served by `explanation_service.py`:
+
+- `POST /api/explain/transaction` — **SHAP** TreeExplainer on the deployed XGBoost when available; deterministic feature-importance + rule **fallback** otherwise.
+- `GET /api/explain/case/{id}` — typology rationale + bucketed evidence (visibility + RBAC enforced, audited).
+- `GET /api/explain/model` — evaluation-report summary (public).
+
+Every factor shows a coarse `value_bucket` and a direction (`increases_risk` / `decreases_risk`) — **never raw amounts, account ids, or payloads**. A final PII guard scrubs the whole payload so `pii_safe` is always truthful. Explanations are **decision-support only** — not a legal/regulatory sufficiency statement — and the deployed model is not retrained.
+
+</details>
+
+---
+
+## Privacy & Compliance
+
+Naseej is **PDPL-by-design** and a **SAMA-aligned prototype**. It is **not** SAMA-certified, **not** PDPL-certified, and makes **no** guaranteed-compliance or production-ready claims — those require formal audit and certification the project has not undergone.
+
+### Zero-PII guarantee
+
+Every pattern hash passes the `verify_zero_pii()` check, proved by **136 automated tests**. The following are **never** included in any hash or API response:
 
 - Personal names (name, full_name, first_name, last_name)
 - Financial identifiers (IBAN, BBAN, sort code, routing number)
@@ -481,8 +365,6 @@ Every pattern hash produced by Naseej passes the `verify_zero_pii()` check, whic
 - Account identifiers (account_id, from_account, to_account, src_id, dst_id)
 - Digital identifiers (IP address, device ID, MAC address)
 - Biometric dates (date of birth)
-
-The hash encodes only **fraud topology shape** — degree sequences, bucketed amounts, pattern type — never the identities of the accounts involved.
 
 **Formal proof (central thesis):**
 
@@ -494,36 +376,164 @@ The hash encodes only **fraud topology shape** — degree sequences, bucketed am
 hash_bank_a == hash_bank_b  # ← proved in TestSameTopologyDifferentPIIProducesIdenticalHash
 ```
 
----
+### Compliance alignment
 
-## Compliance Alignment
-
-| Framework | Alignment |
+| Framework | Alignment (by-design, not certified) |
 |-----------|-----------|
 | SDAIA PDPL (Personal Data Protection Law) | Zero PII by design — proved by 136 tests |
 | SAMA Counter-Fraud Framework | Proactive early-warning and cross-bank threat intelligence |
 | Model governance | Human triage recommended; no autonomous production blocking |
 
----
-
-## Limitations
-
-1. **Model not retrained on context features.** A node-local feature store now computes real rolling 1h/24h velocity, counterparty and graph-window features (`docs/FEATURE_STORE.md`), and `/api/features/score-with-context` layers a transparent rule adjustment over the baseline score — but the XGBoost model itself has not been retrained on these features yet (every response states `model_retrained_on_context: false`). The legacy `/api/score-transaction` path still scores without history.
-2. **Synthetic data only.** AMLworld is a research benchmark, not real banking data. Out-of-time validation on real Saudi transactions is required before any production deployment.
-3. **Simulated federation.** The cross-bank broadcast is a frontend animation. Production requires a secure aggregation layer with PKI.
-4. **Single-factor auth only.** Protected endpoints require per-node API keys (`NASEEJ_NODE_KEYS`) and access is partitioned per node profile, but it is one credential per node — analyst roles are selected within a server-configured envelope, not issued per person. No mTLS, key rotation, rate limiting, or replay protection yet — production requires the full API Gateway from the backend blueprint plus per-analyst credentials from each bank's IAM.
-5. **Fixed bucketing.** Bucket boundaries are hardcoded. Changing them invalidates all existing hashes.
+See [`docs/SECURITY_COMPLIANCE.md`](docs/SECURITY_COMPLIANCE.md) for PDPL-by-design, SAMA alignment, audit, retention, and out-of-scope details.
 
 ---
 
-## Roadmap
+## How to Run
 
-| Horizon | Key additions |
-|---------|--------------|
-| Post-hackathon | ~~Feature store for velocity features~~ (done — `docs/FEATURE_STORE.md`) · retrain on context features · SHAP explainability · GNN baseline |
-| Pilot prototype | Out-of-time validation · Analyst case management UI · Configurable thresholds |
-| Controlled pilot | Tokenised real data · Federated learning (Flower) · Differential privacy |
-| Production path | SAMA sandbox · Multi-bank PKI · Streaming pipeline · Model governance |
+### Prerequisites
+
+- Node.js ≥ 18
+- Python 3.11+
+- `pip install -r backend/requirements.txt`
+
+All commands run from the repository root.
+
+### Frontend (demo only — no backend needed)
+
+```bash
+cd naseej-ai
+npm install
+npm run dev
+# Opens at http://localhost:5173
+```
+
+The demo simulation runs entirely in the browser. If the backend is not running, metric cards show fallback values and an `API OFFLINE` indicator appears in the research strip.
+
+### Backend (enriches the data cards)
+
+```bash
+# Windows PowerShell / Bash — same command
+uvicorn backend.app.main:app --reload --port 8000
+```
+
+Or use the included helper scripts:
+
+```bash
+# PowerShell
+.\scripts\run_backend.ps1
+
+# Bash
+bash scripts/run_backend.sh
+```
+
+**API documentation:** `http://localhost:8000/docs`
+
+### Judge / hackathon demo
+
+Run the frontend (and backend for live strips), then follow [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) — a speakable 5-minute flow. Consolidated proof points are in [`docs/JUDGE_EVIDENCE_PACK.md`](docs/JUDGE_EVIDENCE_PACK.md), and three public read-only endpoints expose them live:
+
+```bash
+curl localhost:8000/api/demo/health              # ready | partial | unavailable (+ checks, demo_safe)
+curl localhost:8000/api/demo/governance-evidence # zero-PII, HITL, audit, RBAC, shadow-only, calibration
+curl localhost:8000/api/demo/judge-summary       # problem/solution, real vs simulated, top differentiators
+```
+
+These carry no raw transactions, identifiers, or PII, and make **no** certified or production-ready claims — **PDPL-by-design** and **SAMA-aligned prototype** only.
+
+### API authentication (bank-node keys, roles, partitioning)
+
+Scoring, pattern analysis, the pattern registry, and cases require an `X-API-Key` header mapped to a registered node id. Health and read-only research stats stay public.
+
+```bash
+# Configure real keys (NODE_ID:key pairs — disables the dev keys entirely)
+export NASEEJ_NODE_KEYS="NODE_A7C2F9E1:your-secret-a,NODE_B3D8E2F4:your-secret-b"
+```
+
+When `NASEEJ_NODE_KEYS` is **unset**, three clearly-labelled dev keys are active so the local demo works with zero setup: Bank A (analyst), Bank B / MLRO (`dev-key-bank-b-local-only`), and a read-only regulator (`dev-key-regulator-local-only`). The frontend sends `dev-key-bank-a-local-only` by default; override with `VITE_NASEEJ_API_KEY`.
+
+```bash
+# 401 — no key
+curl -X POST localhost:8000/api/score-transaction -H "Content-Type: application/json" -d '{...}'
+
+# 200 — local simulation
+curl -X POST localhost:8000/api/score-transaction \
+  -H "Content-Type: application/json" -H "X-API-Key: dev-key-bank-a-local-only" -d '{...}'
+```
+
+Every request to a protected endpoint is appended to the hash-chained audit log at `backend/data/audit/audit.jsonl` (override: `NASEEJ_AUDIT_LOG`). The registry persists to `backend/data/patterns.jsonl` and cases to `backend/data/cases.jsonl`.
+
+### Train the baseline model (optional — model already included)
+
+The trained model is already at `ml/models/baseline_model.joblib`. To retrain, or to run the evaluation suite and cross-bank experiment:
+
+```bash
+# Retrain the deployed baseline
+python -m ml.src.train_baseline \
+    --input ml/data/features/train_features.parquet \
+    --output ml/models/baseline_model.joblib --sample 300000
+
+# Cross-bank recall experiment
+python -m ml.src.cross_bank_experiment
+
+# Evaluation suite (LightGBM/RF/LR comparison, typology recall, ablation)
+python -m ml.src.evaluation_suite --train-sample 800000 --seed 42
+```
+
+LightGBM is optional: if it is not installed the suite skips it with a recorded reason and reports the remaining models — results are never faked.
+
+---
+
+## API Overview
+
+Public read-only endpoints serve live ML/evaluation reports (with graceful fallback). Protected endpoints require an `X-API-Key` node key. Every protected request passes the gate chain **auth → role/permissions → sharing scope → JSON Schema → zero-PII guard → audit log**.
+
+| Group | Endpoint | Auth | Description |
+|---|---|:---:|---|
+| **Model & evaluation** | `GET /api/model/metrics` | public | XGBoost test metrics |
+| | `GET /api/model/comparison` | public | LightGBM vs XGBoost vs RF vs LR |
+| | `GET /api/model/per-typology-recall` | public | Recall by AML typology (heuristic labels) |
+| | `GET /api/model/threshold-analysis` | public | Operating points |
+| | `GET /api/model/ablation-report` | public | Feature ablation |
+| | `GET /api/model/feature-contract` · `feature-parity` · `training-feature-manifest` | public | Offline/online reconciliation reports |
+| **Shadow candidate** | `GET /api/model/candidate/*` | public | Shadow candidate reports (metrics, comparison, …) |
+| | `POST /api/model/candidate/score-shadow` | node key | Candidate vs baseline — comparison only |
+| | `GET /api/model/candidate/shadow-monitoring` | node key | Node-scoped aggregates + prototype drift |
+| | `GET /api/model/candidate/calibration-readiness` · `calibration-status` | public | States: not calibrated, no deploy |
+| **Scoring & patterns** | `POST /api/score-transaction` | node key | XGBoost inference |
+| | `POST /api/analyze-pattern` | node key | Patterns + privacy hash |
+| | `POST /api/patterns` · `GET /api/patterns[/{id}]` | node key | Register / query the threat-pattern registry |
+| **Cases** | `POST /api/cases/from-pattern/{id}` | node key | Open an analyst case |
+| | `GET/PATCH/POST /api/cases/...` | node key | Case lifecycle, notes, decisions |
+| **Features** | `POST /api/features/ingest-transaction` | node key | Feed node-local velocity windows |
+| | `GET /api/features/account/{id}` | node key | Velocity/graph features |
+| | `POST /api/features/score-with-context` | node key | Baseline model + transparent rule layer |
+| **Explainability** | `POST /api/explain/transaction` | node key | "Why flagged?" (SHAP / fallback) |
+| | `GET /api/explain/case/{id}` | node key | Case explanation |
+| | `GET /api/explain/model` | public | Model evidence summary |
+| **Feedback** | `POST /api/feedback/from-case/{id}` | node key | Closed-case → PII-safe calibration label |
+| | `GET /api/feedback[/calibration-dataset]` | node key | Node-scoped labels |
+| **Demo / governance** | `GET /api/demo/health` · `governance-evidence` · `judge-summary` | public | Readiness, evidence, judge brief |
+| | `GET /api/cross-bank/results` | public | 4-bank experiment |
+| **Auth** | `GET /api/auth/whoami` | node key | Node, role, permissions |
+
+---
+
+## Tests
+
+```bash
+# From repo root — runs all 565 tests
+python -m pytest backend/tests ml/tests -v
+
+# Individual suites
+python -m pytest ml/tests/test_privacy_hash.py -v          # 136 privacy-hash tests
+python -m pytest backend/tests/test_access_control.py -v   # sharing scopes, ownership, RBAC
+python -m pytest backend/tests/test_cases.py -v            # case lifecycle + transitions
+python -m pytest backend/tests/test_pattern_registry.py -v # registry gates + audit
+python -m pytest backend/tests/test_pii_guard.py -v        # zero-PII guard (Arabic/IBAN/phone)
+python -m pytest backend/tests/test_auth.py -v             # node-key authentication
+python -m pytest backend/tests/test_audit_service.py -v    # append-only hash chain
+python -m pytest backend/tests/test_feature_store.py -v    # velocity windows + node isolation
+```
 
 ---
 
@@ -537,33 +547,66 @@ hash_bank_a == hash_bank_b  # ← proved in TestSameTopologyDifferentPIIProduces
 | [`docs/SECURITY_COMPLIANCE.md`](docs/SECURITY_COMPLIANCE.md) | PDPL-by-design, SAMA alignment, audit, incident response, retention, out-of-scope |
 | [`docs/CASE_MANAGEMENT.md`](docs/CASE_MANAGEMENT.md) | Case lifecycle, human-in-the-loop decision model, status machine, simulated vs real |
 | [`docs/FEATURE_STORE.md`](docs/FEATURE_STORE.md) | Feature catalogue, rolling velocity windows, node isolation, contextual scoring honesty |
+| [`docs/FEATURE_CONTRACT.md`](docs/FEATURE_CONTRACT.md) | Offline/online feature contract + parity reconciliation |
+| [`docs/MODEL_EVALUATION.md`](docs/MODEL_EVALUATION.md) | Temporal-split evaluation: LightGBM/RF/LR comparison, typology recall, ablation |
+| [`docs/CANDIDATE_MODEL.md`](docs/CANDIDATE_MODEL.md) | Shadow candidate model (never deployed) |
+| [`docs/SHADOW_MONITORING.md`](docs/SHADOW_MONITORING.md) | Prototype shadow monitoring + drift |
+| [`docs/ANALYST_FEEDBACK_LOOP.md`](docs/ANALYST_FEEDBACK_LOOP.md) | Closed-case → PII-safe calibration labels |
+| [`docs/EXPLAINABILITY.md`](docs/EXPLAINABILITY.md) | PII-safe "Why flagged?" engine |
 | [`docs/ML_ROADMAP.md`](docs/ML_ROADMAP.md) | 7-phase roadmap: rules → XGBoost → GNN → federated → governance |
-| [`docs/INVESTIGATOR_EXPERIENCE.md`](docs/INVESTIGATOR_EXPERIENCE.md) | Fraud-analyst workspace design (risk queue, why-flagged, overrides, audit) |
-| [`docs/DEMO_SCRIPT_RESEARCH_VERSION.md`](docs/DEMO_SCRIPT_RESEARCH_VERSION.md) | Presentation script + judge Q&A |
+| [`docs/INVESTIGATOR_EXPERIENCE.md`](docs/INVESTIGATOR_EXPERIENCE.md) | Fraud-analyst workspace design |
+| [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) · [`docs/JUDGE_EVIDENCE_PACK.md`](docs/JUDGE_EVIDENCE_PACK.md) | 5-minute demo script + judge evidence pack |
 | [`docs/JUDGES_BRIEF.md`](docs/JUDGES_BRIEF.md) | Executive summary for evaluators |
 | [`naseej-ai/README.md`](naseej-ai/README.md) | Frontend module structure and design decisions |
 
 ---
 
-## Academic Foundation
+## Limitations
 
-- Malik Ashfaq Ur Rahman, *AI-Driven Fraud Detection and Financial Security Framework for Saudi Banking Systems* (May 2026)
-- Edgar Altszyler et al., "Realistic Synthetic Financial Transactions for Anti-Money Laundering Models" (AMLworld / IBM, NeurIPS 2022)
-- McMahan et al., "Communication-Efficient Learning of Deep Networks from Decentralized Data" (Google AI, 2017) — Federated Learning
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18.3 · Vite 5.4 · Tailwind CSS 3.4 · Framer Motion 12 · Lucide React |
-| Backend | Python 3.11 · FastAPI 0.115 · Uvicorn · Pydantic v2 |
-| ML | XGBoost · scikit-learn · Pandas · NumPy · joblib |
-| Privacy | SHA-256 · canonical JSON · value bucketing |
-| Dataset | AMLworld HI-Small (IBM synthetic, 475 MB) |
-| Tests | pytest 9.0.3 · FastAPI TestClient · httpx |
+1. **Model not retrained on context features.** A node-local feature store now computes real rolling 1h/24h velocity, counterparty, and graph-window features ([`docs/FEATURE_STORE.md`](docs/FEATURE_STORE.md)), and `/api/features/score-with-context` layers a transparent rule adjustment over the baseline score — but the XGBoost model itself has **not** been retrained on these features yet (every response states `model_retrained_on_context: false`). The legacy `/api/score-transaction` path still scores without history.
+2. **Synthetic data only.** AMLworld is a research benchmark, not real banking data. Out-of-time validation on real Saudi transactions is required before any production deployment.
+3. **Simulated federation.** The cross-bank broadcast is a frontend animation. Production requires a secure aggregation layer with PKI.
+4. **Single-factor auth only.** Protected endpoints require per-node API keys and access is partitioned per node profile, but it is one credential per node — analyst roles are selected within a server-configured envelope, not issued per person. No mTLS, key rotation, rate limiting, or replay protection yet.
+5. **Fixed bucketing.** Bucket boundaries are hardcoded. Changing them invalidates all existing hashes.
 
 ---
 
-*Research prototype. Production deployment requires SAMA supervision, adversarial robustness testing, real cryptographic federation, and independent validation on real banking data.*
+## Roadmap
+
+| Horizon | Key additions |
+|---------|--------------|
+| Post-hackathon | ~~Feature store for velocity features~~ (done — [`docs/FEATURE_STORE.md`](docs/FEATURE_STORE.md)) · retrain on context features · SHAP explainability · GNN baseline |
+| Pilot prototype | Out-of-time validation · Analyst case management UI · Configurable thresholds |
+| Controlled pilot | Tokenised real data · Federated learning (Flower) · Differential privacy |
+| Production path | SAMA sandbox · Multi-bank PKI · Streaming pipeline · Model governance |
+
+---
+
+## Team
+
+**Team Madar | فريق مدار** — AMAD Hackathon · FinTech Track
+
+| Member | Role |
+|---|---|
+| **OBAID ALMUTAIRI** | Founder & Product Lead |
+| **AMAL ALMUTAIRI** | AI / Data Lead |
+| **SADEEM ALMUTAIRI** | UI/UX Designer |
+| **ASEEL ALMUTAIRI** | Full-Stack Developer |
+| **ABDULLMALIK ALMUTAIRI** | Business & Partnerships Lead |
+
+*A team combining product, AI, design, engineering, and partnerships.*
+
+---
+
+## References & Dataset Source
+
+- **Dataset** — [IBM Transactions for Anti Money Laundering (AML)](https://www.kaggle.com/datasets/ealtman2019/ibm-transactions-for-anti-money-laundering-aml) (IBM / Kaggle public release; AMLworld HI-Small subset used).
+- Edgar Altszyler et al., *"Realistic Synthetic Financial Transactions for Anti-Money Laundering Models"* (AMLworld / IBM, NeurIPS 2022).
+- Malik Ashfaq Ur Rahman, *AI-Driven Fraud Detection and Financial Security Framework for Saudi Banking Systems* (May 2026).
+- McMahan et al., *"Communication-Efficient Learning of Deep Networks from Decentralized Data"* (Google AI, 2017) — Federated Learning.
+
+---
+
+## License & Prototype Disclaimer
+
+*Research prototype. Production deployment would require SAMA supervision, adversarial robustness testing, real cryptographic federation, per-analyst credentials, and independent validation on real banking data.* Naseej is **not** certified, **not** production-ready, and trained on **synthetic data only**.
