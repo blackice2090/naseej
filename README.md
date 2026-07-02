@@ -47,7 +47,6 @@ Banks weave a shared defense against money-laundering mule networks — *without
 - [How to Run](#how-to-run)
 - [API Overview](#api-overview)
 - [Tests](#tests)
-- [Documentation](#documentation)
 - [Limitations](#limitations)
 - [Roadmap](#roadmap)
 - [Team](#team)
@@ -169,7 +168,7 @@ The live demo runs entirely in the browser. A backend connection enriches the da
 
 Click **RESET DEMO** to restart at any point.
 
-When the flag fires, the detection becomes an analyst case: switch to the **INVESTIGATOR** tab in the top nav to triage it — risk queue, "Why flagged?" explanation, recommended action, attributed decisions, PII-guarded notes, and the audit trail. With the backend live this runs through the real case API; offline it falls back to clearly-labelled mock cases. **The system recommends — a human decides** (see [`docs/CASE_MANAGEMENT.md`](docs/CASE_MANAGEMENT.md)).
+When the flag fires, the detection becomes an analyst case: switch to the **INVESTIGATOR** tab in the top nav to triage it — risk queue, "Why flagged?" explanation, recommended action, attributed decisions, PII-guarded notes, and the audit trail. With the backend live this runs through the real case API; offline it falls back to clearly-labelled mock cases. **The system recommends — a human decides.**
 
 ---
 
@@ -185,7 +184,6 @@ Only technologies actually present in the repository are listed (verified agains
 | **Privacy** | SHA-256 · canonical JSON · value bucketing · fail-closed zero-PII guard |
 | **Data** | IBM AMLworld HI-Small (synthetic AML dataset) |
 | **Testing** | pytest · FastAPI TestClient · httpx |
-| **Documentation** | Markdown docs (`docs/`) · FastAPI OpenAPI docs at `/docs` |
 
 ---
 
@@ -264,7 +262,7 @@ Trained on AMLworld HI-Small (IBM synthetic AML dataset). **Synthetic data only 
 
 ### Evaluation suite findings (temporal split — separate protocol, not directly comparable)
 
-A later evaluation phase ([`docs/MODEL_EVALUATION.md`](docs/MODEL_EVALUATION.md)) re-ran the comparison on a **temporal** 70/15/15 split with point-in-time features. Under that protocol:
+A later evaluation phase re-ran the comparison on a **temporal** 70/15/15 split with point-in-time features. Under that protocol:
 
 | Finding | Result |
 |---|---|
@@ -304,7 +302,7 @@ Naseej achieves **500% of the shared-model recall gain at zero PII cost**.
 Beyond the deployed baseline, the repository includes honest-by-design ML engineering and governance tooling. None of the below changes the deployed model — the baseline and its metrics are never overwritten.
 
 <details>
-<summary><b>Feature reconciliation — offline/online parity</b> (<a href="docs/FEATURE_CONTRACT.md">docs/FEATURE_CONTRACT.md</a>)</summary>
+<summary><b>Feature reconciliation — offline/online parity</b></summary>
 
 A canonical **feature contract** reconciles the offline training features with the online feature-store features, and a **replay harness + parity checker** (four deterministic scenarios) prove they agree point-in-time:
 
@@ -317,26 +315,26 @@ A canonical **feature contract** reconciles the offline training features with t
 </details>
 
 <details>
-<summary><b>Shadow candidate model</b> (<a href="docs/CANDIDATE_MODEL.md">docs/CANDIDATE_MODEL.md</a>)</summary>
+<summary><b>Shadow candidate model</b></summary>
 
 A clean-room candidate trained on **only** the 15 approved parity-clean features (no identity encodings, no serve-only or all-time features). It is a **shadow evaluation — never deployed**; `baseline_model.joblib` and `model_metrics.json` are never overwritten.
 
 - Selected by validation PR-AUC: **XGBoost**, held-out test **PR-AUC 0.4247**, F1 0.4454.
 - Below the identity-using ablation (`full_with_account_ids` 0.574) — the honest cost of excluding serve-only graph features and identity memorisation.
 - **Live shadow scoring** (`POST /api/model/candidate/score-shadow`) runs the candidate beside the baseline — comparison-only; it never creates a case, blocks/approves, or affects `/api/score-transaction`.
-- **Shadow monitoring** ([`docs/SHADOW_MONITORING.md`](docs/SHADOW_MONITORING.md)) records bucketed, PII-safe observations and a prototype drift signal. The candidate is **not calibrated** and **not recommended for deployment**.
+- **Shadow monitoring** records bucketed, PII-safe observations and a prototype drift signal. The candidate is **not calibrated** and **not recommended for deployment**.
 
 </details>
 
 <details>
-<summary><b>Analyst feedback loop</b> (<a href="docs/ANALYST_FEEDBACK_LOOP.md">docs/ANALYST_FEEDBACK_LOOP.md</a>)</summary>
+<summary><b>Analyst feedback loop</b></summary>
 
 Closing a case turns its outcome into a bucketed, PII-safe **calibration label** (`closed_confirmed → confirmed_fraud`, etc.). Below a minimum threshold the calibration dataset returns `insufficient_labels` and **never fakes** calibration metrics. The candidate stays uncalibrated and undeployed — **calibration dataset, not production calibration**.
 
 </details>
 
 <details>
-<summary><b>Explainability — "Why flagged?"</b> (<a href="docs/EXPLAINABILITY.md">docs/EXPLAINABILITY.md</a>)</summary>
+<summary><b>Explainability — "Why flagged?"</b></summary>
 
 Analyst-readable, **PII-safe** explanations served by `explanation_service.py`:
 
@@ -384,8 +382,6 @@ hash_bank_a == hash_bank_b  # ← proved in TestSameTopologyDifferentPIIProduces
 | SAMA Counter-Fraud Framework | Proactive early-warning and cross-bank threat intelligence |
 | Model governance | Human triage recommended; no autonomous production blocking |
 
-See [`docs/SECURITY_COMPLIANCE.md`](docs/SECURITY_COMPLIANCE.md) for PDPL-by-design, SAMA alignment, audit, retention, and out-of-scope details.
-
 ---
 
 ## How to Run
@@ -430,7 +426,7 @@ bash scripts/run_backend.sh
 
 ### Judge / hackathon demo
 
-Run the frontend (and backend for live strips), then follow [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) — a speakable 5-minute flow. Consolidated proof points are in [`docs/JUDGE_EVIDENCE_PACK.md`](docs/JUDGE_EVIDENCE_PACK.md), and three public read-only endpoints expose them live:
+Run the frontend (and backend for live strips). Three public read-only endpoints expose the judge/demo evidence live:
 
 ```bash
 curl localhost:8000/api/demo/health              # ready | partial | unavailable (+ checks, demo_safe)
@@ -537,33 +533,9 @@ python -m pytest backend/tests/test_feature_store.py -v    # velocity windows + 
 
 ---
 
-## Documentation
-
-| Document | Contents |
-|---|---|
-| [`docs/TECHNICAL_ARCHITECTURE.md`](docs/TECHNICAL_ARCHITECTURE.md) | Current system architecture, ML pipeline, API reference |
-| [`docs/BACKEND_BLUEPRINT.md`](docs/BACKEND_BLUEPRINT.md) | Post-MVP service decomposition (gateway, registry, privacy layer, …) |
-| [`docs/THREAT_PATTERN_CONTRACT.md`](docs/THREAT_PATTERN_CONTRACT.md) | Zero-PII threat intelligence data contract + [JSON Schema](docs/schemas/threat_pattern.schema.json) |
-| [`docs/SECURITY_COMPLIANCE.md`](docs/SECURITY_COMPLIANCE.md) | PDPL-by-design, SAMA alignment, audit, incident response, retention, out-of-scope |
-| [`docs/CASE_MANAGEMENT.md`](docs/CASE_MANAGEMENT.md) | Case lifecycle, human-in-the-loop decision model, status machine, simulated vs real |
-| [`docs/FEATURE_STORE.md`](docs/FEATURE_STORE.md) | Feature catalogue, rolling velocity windows, node isolation, contextual scoring honesty |
-| [`docs/FEATURE_CONTRACT.md`](docs/FEATURE_CONTRACT.md) | Offline/online feature contract + parity reconciliation |
-| [`docs/MODEL_EVALUATION.md`](docs/MODEL_EVALUATION.md) | Temporal-split evaluation: LightGBM/RF/LR comparison, typology recall, ablation |
-| [`docs/CANDIDATE_MODEL.md`](docs/CANDIDATE_MODEL.md) | Shadow candidate model (never deployed) |
-| [`docs/SHADOW_MONITORING.md`](docs/SHADOW_MONITORING.md) | Prototype shadow monitoring + drift |
-| [`docs/ANALYST_FEEDBACK_LOOP.md`](docs/ANALYST_FEEDBACK_LOOP.md) | Closed-case → PII-safe calibration labels |
-| [`docs/EXPLAINABILITY.md`](docs/EXPLAINABILITY.md) | PII-safe "Why flagged?" engine |
-| [`docs/ML_ROADMAP.md`](docs/ML_ROADMAP.md) | 7-phase roadmap: rules → XGBoost → GNN → federated → governance |
-| [`docs/INVESTIGATOR_EXPERIENCE.md`](docs/INVESTIGATOR_EXPERIENCE.md) | Fraud-analyst workspace design |
-| [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) · [`docs/JUDGE_EVIDENCE_PACK.md`](docs/JUDGE_EVIDENCE_PACK.md) | 5-minute demo script + judge evidence pack |
-| [`docs/JUDGES_BRIEF.md`](docs/JUDGES_BRIEF.md) | Executive summary for evaluators |
-| [`naseej-ai/README.md`](naseej-ai/README.md) | Frontend module structure and design decisions |
-
----
-
 ## Limitations
 
-1. **Model not retrained on context features.** A node-local feature store now computes real rolling 1h/24h velocity, counterparty, and graph-window features ([`docs/FEATURE_STORE.md`](docs/FEATURE_STORE.md)), and `/api/features/score-with-context` layers a transparent rule adjustment over the baseline score — but the XGBoost model itself has **not** been retrained on these features yet (every response states `model_retrained_on_context: false`). The legacy `/api/score-transaction` path still scores without history.
+1. **Model not retrained on context features.** A node-local feature store now computes real rolling 1h/24h velocity, counterparty, and graph-window features, and `/api/features/score-with-context` layers a transparent rule adjustment over the baseline score — but the XGBoost model itself has **not** been retrained on these features yet (every response states `model_retrained_on_context: false`). The legacy `/api/score-transaction` path still scores without history.
 2. **Synthetic data only.** AMLworld is a research benchmark, not real banking data. Out-of-time validation on real Saudi transactions is required before any production deployment.
 3. **Simulated federation.** The cross-bank broadcast is a frontend animation. Production requires a secure aggregation layer with PKI.
 4. **Single-factor auth only.** Protected endpoints require per-node API keys and access is partitioned per node profile, but it is one credential per node — analyst roles are selected within a server-configured envelope, not issued per person. No mTLS, key rotation, rate limiting, or replay protection yet.
@@ -575,7 +547,7 @@ python -m pytest backend/tests/test_feature_store.py -v    # velocity windows + 
 
 | Horizon | Key additions |
 |---------|--------------|
-| Post-hackathon | ~~Feature store for velocity features~~ (done — [`docs/FEATURE_STORE.md`](docs/FEATURE_STORE.md)) · retrain on context features · SHAP explainability · GNN baseline |
+| Post-hackathon | ~~Feature store for velocity features~~ (done) · retrain on context features · SHAP explainability · GNN baseline |
 | Pilot prototype | Out-of-time validation · Analyst case management UI · Configurable thresholds |
 | Controlled pilot | Tokenised real data · Federated learning (Flower) · Differential privacy |
 | Production path | SAMA sandbox · Multi-bank PKI · Streaming pipeline · Model governance |
@@ -601,7 +573,7 @@ python -m pytest backend/tests/test_feature_store.py -v    # velocity windows + 
 ## References & Dataset Source
 
 - **Dataset** — [IBM Transactions for Anti Money Laundering (AML)](https://www.kaggle.com/datasets/ealtman2019/ibm-transactions-for-anti-money-laundering-aml) (IBM / Kaggle public release; AMLworld HI-Small subset used).
-- Edgar Altszyler et al., *"Realistic Synthetic Financial Transactions for Anti-Money Laundering Models"* (AMLworld / IBM, NeurIPS 2022).
+- Erik Altman, Jovan Blanuša, Luc von Niederhäusern, Béni Egressy, Andreea Anghel, and Kubilay Atasu, *"Realistic Synthetic Financial Transactions for Anti-Money Laundering Models"* (AMLworld / IBM, NeurIPS 2022).
 - Malik Ashfaq Ur Rahman, *AI-Driven Fraud Detection and Financial Security Framework for Saudi Banking Systems* (May 2026).
 - McMahan et al., *"Communication-Efficient Learning of Deep Networks from Decentralized Data"* (Google AI, 2017) — Federated Learning.
 
