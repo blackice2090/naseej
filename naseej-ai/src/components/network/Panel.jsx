@@ -17,7 +17,7 @@ export default function Panel({ title, titleAr, icon: Icon, right, children, cla
             {Icon && <Icon size={13} style={{ color: '#4fc3f7' }} />}
             <h2 className="text-[11px] font-bold tracking-[2px]" style={{ color: '#4fc3f7' }}>{title}</h2>
             {titleAr && (
-              <span className="text-[11px]" style={{ color: '#7c4dff', fontFamily: 'serif' }}>{titleAr}</span>
+              <span className="text-[11px] leading-relaxed" style={{ color: '#7c4dff', fontFamily: 'var(--font-arabic)' }} dir="rtl">{titleAr}</span>
             )}
           </div>
           {right}

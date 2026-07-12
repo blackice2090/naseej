@@ -16,7 +16,7 @@ export default function PriorityCasesTable({ cases, onOpenCase }) {
       <div className="overflow-x-auto">
         <table className="w-full border-collapse" style={{ minWidth: 640 }}>
           <thead>
-            <tr className="text-[9px] tracking-widest" style={{ color: '#5a6a8a' }}>
+            <tr className="text-[9px] tracking-widest" style={{ color: '#7c8caf' }}>
               <th className="text-left font-bold py-2 px-2">CASE ID</th>
               <th className="text-left font-bold py-2 px-2">BANK</th>
               <th className="text-left font-bold py-2 px-2">PATTERN</th>
@@ -38,7 +38,7 @@ export default function PriorityCasesTable({ cases, onOpenCase }) {
                   role="button"
                   aria-label={`Open case ${c.id} in Investigator`}
                   onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenCase?.(c) } }}
-                  className="text-[11px] cursor-pointer transition-colors"
+                  className="text-[11px] cursor-pointer transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#4fc3f7]"
                   style={{
                     borderTop: '1px solid rgba(255,255,255,0.05)',
                     borderLeft: `2px solid ${c.status === 'Critical' ? sc : 'transparent'}`,
@@ -56,7 +56,7 @@ export default function PriorityCasesTable({ cases, onOpenCase }) {
                   <td className="py-2 px-2 text-center">
                     {c.crossBank
                       ? <span className="inline-flex items-center gap-1 font-mono text-[9px] font-bold" style={{ color: '#7c4dff' }}><Check size={11} aria-hidden="true" />Yes</span>
-                      : <span className="inline-flex items-center gap-1 font-mono text-[9px]" style={{ color: '#5a6a8a' }}><Minus size={11} aria-hidden="true" />No</span>}
+                      : <span className="inline-flex items-center gap-1 font-mono text-[9px]" style={{ color: '#7c8caf' }}><Minus size={11} aria-hidden="true" />No</span>}
                   </td>
                   <td className="py-2 px-2">
                     <span className="font-mono text-[9px] font-bold tracking-wider px-1.5 py-0.5 rounded"
@@ -65,14 +65,14 @@ export default function PriorityCasesTable({ cases, onOpenCase }) {
                     </span>
                   </td>
                   <td className="py-2 px-2" style={{ color: '#a8b6d8' }}>{c.action}</td>
-                  <td className="py-2 px-2 text-right"><ChevronRight size={13} style={{ color: '#4a5a7a' }} aria-hidden="true" /></td>
+                  <td className="py-2 px-2 text-right"><ChevronRight size={13} style={{ color: '#6a7a9e' }} aria-hidden="true" /></td>
                 </tr>
               )
             })}
           </tbody>
         </table>
       </div>
-      <p className="text-[9px] tracking-widest mt-2 pt-2" style={{ color: '#5a6a8a', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+      <p className="text-[9px] tracking-widest mt-2 pt-2" style={{ color: '#7c8caf', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
         SELECT A CASE TO OPEN IT IN THE INVESTIGATOR WORKFLOW · HUMAN REVIEW REQUIRED · FLAGGED FOR REVIEW, NOT AUTO-BLOCKED
       </p>
     </Panel>

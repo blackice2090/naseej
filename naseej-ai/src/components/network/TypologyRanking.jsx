@@ -23,7 +23,7 @@ export default function TypologyRanking({ typologies }) {
             <div className="rounded-full overflow-hidden" style={{ height: 6, background: 'rgba(255,255,255,0.05)' }}>
               <div className="h-full rounded-full" style={{ width: `${(t.count / max) * 100}%`, background: CAT_COLORS[t.pattern] }} />
             </div>
-            <p className="text-[9.5px] leading-snug mt-1" style={{ color: '#5a6a8a' }}>{t.explanation}</p>
+            <p className="text-[9.5px] leading-snug mt-1" style={{ color: '#7c8caf' }}>{t.explanation}</p>
           </div>
         ))}
       </div>

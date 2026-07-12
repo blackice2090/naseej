@@ -22,7 +22,7 @@ export default function TopNav({ view, onViewChange, openCaseCount = 0 }) {
         <span className="font-bold tracking-[3px] text-sm" style={{ color: '#4fc3f7' }}>
           {BRAND.nameEn}
         </span>
-        <span className="text-[12px] tracking-wide" style={{ color: '#7c4dff', fontFamily: 'serif' }}>
+        <span className="text-[12px] tracking-wide" style={{ color: '#7c4dff', fontFamily: 'var(--font-arabic)' }} dir="rtl">
           {BRAND.nameAr}
         </span>
         <span className="hidden lg:inline text-[9px] tracking-widest" style={{ color: '#4a5a7a' }}>

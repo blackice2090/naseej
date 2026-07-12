@@ -14,7 +14,7 @@ function KpiCard({ icon: Icon, value, label, note, accent }) {
         <Icon size={15} style={{ color: accent }} aria-hidden="true" />
       </div>
       <div className="text-3xl font-bold font-mono leading-none mt-1" style={{ color: accent }}>{value}</div>
-      <p className="text-[10px] leading-snug mt-1.5" style={{ color: '#5a6a8a' }}>{note}</p>
+      <p className="text-[10px] leading-snug mt-1.5" style={{ color: '#7c8caf' }}>{note}</p>
     </div>
   )
 }

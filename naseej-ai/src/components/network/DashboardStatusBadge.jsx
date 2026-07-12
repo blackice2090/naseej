@@ -31,7 +31,7 @@ export default function DashboardStatusBadge({ connected }) {
       </span>
       <span
         className="font-mono text-[8px] tracking-widest"
-        style={{ color: '#5a6a8a' }}
+        style={{ color: '#7c8caf' }}
         title="Backend not reachable — deterministic fallback data in use"
       >
         API OFFLINE

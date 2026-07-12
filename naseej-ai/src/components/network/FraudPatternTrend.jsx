@@ -58,14 +58,14 @@ export default function FraudPatternTrend({ trend, topPattern, range }) {
                   )
                 })}
                 <text x={bi * bucketW + bucketW / 2} y="59" textAnchor="middle" fontSize="2.6"
-                  fill="#5a6a8a" style={{ fontFamily: 'monospace' }}>{row.label}</text>
+                  fill="#7c8caf" style={{ fontFamily: 'monospace' }}>{row.label}</text>
               </g>
             )
           })}
         </svg>
       </div>
 
-      <div className="text-[9px] tracking-widest text-center mt-0.5" style={{ color: '#5a6a8a' }}>
+      <div className="text-[9px] tracking-widest text-center mt-0.5" style={{ color: '#7c8caf' }}>
         {axisLabel.toUpperCase()}
       </div>
 

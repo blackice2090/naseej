@@ -33,6 +33,14 @@ const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
 // Cross-bank intelligence map — the main visual. Shows only privacy-safe
 // pattern-hash flows and confirmed matches between nodes. No accounts, names,
 // IBANs, national IDs, phone numbers, or raw transactions appear here.
+// Map shared-hash volume to a controlled, non-scaling stroke width. Higher
+// volume reads as a heavier connection, but the range is clamped to ~2–4px so
+// no path ever covers labels, arrowheads, nodes, or other connections.
+const strokeForHashes = (hashes = 1) => {
+  const clamped = Math.max(1, Math.min(hashes, 8))
+  return 2 + ((clamped - 1) / 7) * 2 // 1 hash → 2px, 8+ hashes → 4px
+}
+
 export default function CrossBankNetworkMap({ edges }) {
   // Nodes that carry at least one active edge under the current filters.
   const connected = new Set()
@@ -41,7 +49,7 @@ export default function CrossBankNetworkMap({ edges }) {
   return (
     <Panel title="CROSS-BANK INTELLIGENCE MAP" titleAr="خريطة الاستخبارات بين البنوك" icon={Network} className="flex-1">
       <div className="flex flex-col lg:flex-row gap-4 flex-1">
-        <div className="relative flex-1" style={{ minHeight: 196 }}>
+        <div className="relative flex-1" style={{ minHeight: 196, maxHeight: '48vh' }}>
           <svg viewBox="0 0 100 100" className="w-full h-full" style={{ overflow: 'visible' }} role="img"
             aria-label="Privacy-safe intelligence flows between four bank nodes">
             <defs>
@@ -68,10 +76,19 @@ export default function CrossBankNetworkMap({ edges }) {
               const mx = (x1 + x2) / 2, my = (y1 + y2) / 2
               return (
                 <g key={`line-${i}`}>
+                  {/* Restrained glow behind the critical path (position never animated). */}
+                  {e.critical && (
+                    <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={RED}
+                      strokeWidth={strokeForHashes(e.hashes) + 3} vectorEffect="non-scaling-stroke"
+                      strokeLinecap="round" opacity="0.18" className="ni-critical-path"
+                      style={{ pointerEvents: 'none' }} />
+                  )}
                   {/* Faint leader tying the badge to its edge midpoint. */}
                   <line x1={slot.x} y1={slot.y} x2={mx} y2={my} stroke={color} strokeWidth="0.3" opacity="0.28" />
-                  <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth="0.8"
-                    strokeDasharray="2 1.5" opacity="0.85"
+                  <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={color}
+                    strokeWidth={strokeForHashes(e.hashes)} vectorEffect="non-scaling-stroke"
+                    strokeDasharray="6 4" strokeLinecap="round" opacity={e.critical ? 1 : 0.85}
+                    className={e.critical ? 'ni-critical-path' : undefined}
                     markerEnd={`url(#${e.critical ? 'niArrowRed' : 'niArrow'})`} />
                 </g>
               )
@@ -84,15 +101,15 @@ export default function CrossBankNetworkMap({ edges }) {
               const slot = LABEL_SLOTS[`${e.from}->${e.to}`] || { x: 50, y: 50 }
               const l1 = plural(e.hashes, 'Hash', 'Hashes')
               const l2 = plural(e.matches, 'Match', 'Matches')
-              const w = Math.max(l1.length, l2.length) * 1.55 + 3
-              const h = 8.6
+              const w = Math.max(l1.length, l2.length) * 1.55 + 4.4
+              const h = 9.4
               return (
                 <g key={`label-${i}`}>
-                  <rect x={slot.x - w / 2} y={slot.y - h / 2} width={w} height={h} rx="1.6"
+                  <rect x={slot.x - w / 2} y={slot.y - h / 2} width={w} height={h} rx="1.8"
                     fill="rgba(7,9,15,0.94)" stroke={`${color}88`} strokeWidth="0.35" />
-                  <text x={slot.x} y={slot.y - 0.9} textAnchor="middle" fontSize="2.7" fill="#e6ecff"
+                  <text x={slot.x} y={slot.y - 1.1} textAnchor="middle" fontSize="2.7" fill="#e6ecff"
                     fontWeight="bold" style={{ fontFamily: 'monospace' }}>{l1}</text>
-                  <text x={slot.x} y={slot.y + 2.9} textAnchor="middle" fontSize="2.7"
+                  <text x={slot.x} y={slot.y + 3.1} textAnchor="middle" fontSize="2.7"
                     fill={e.critical ? '#ffb3c1' : '#c3b6ff'} style={{ fontFamily: 'monospace' }}>{l2}</text>
                 </g>
               )
@@ -111,7 +128,7 @@ export default function CrossBankNetworkMap({ edges }) {
                     {bank}
                   </text>
                   {!active && (
-                    <text x={p.x} y={p.y + 8.4} textAnchor="middle" fontSize="2.3" fill="#5a6a8a"
+                    <text x={p.x} y={p.y + 8.4} textAnchor="middle" fontSize="2.3" fill="#7c8caf"
                       style={{ fontFamily: 'monospace' }}>No active matches</text>
                   )}
                 </g>
@@ -125,12 +142,12 @@ export default function CrossBankNetworkMap({ edges }) {
             <LegendRow color="#4fc3f7" label="Bank node" symbol="ring" />
             <LegendRow color={VIOLET} label="Shared pattern hash / privacy-safe connection" />
             <LegendRow color={RED} label="Cross-bank match (critical)" />
-            <div className="text-[9px] mt-0.5" style={{ color: '#5a6a8a' }}>Each badge: pattern hashes shared · confirmed matches</div>
+            <div className="text-[9px] mt-0.5" style={{ color: '#7c8caf' }}>Each badge: pattern hashes shared · confirmed matches</div>
           </div>
           <p className="text-[10px] leading-relaxed pt-2" style={{ color: '#7a8aad', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
             {NETWORK_INTEL.mapCaption}
           </p>
-          <p className="text-[10px] leading-relaxed" style={{ color: '#7c4dff', fontFamily: 'serif' }} dir="rtl">
+          <p className="text-[10px] leading-relaxed text-right" style={{ color: '#7c4dff', fontFamily: 'var(--font-arabic)' }} dir="rtl">
             {NETWORK_INTEL.mapCaptionAr}
           </p>
         </div>

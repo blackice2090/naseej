@@ -5,7 +5,7 @@ import { TIME_RANGES, BANK_FILTERS, PATTERN_FILTERS } from '../../data/networkIn
 function FilterGroup({ label, value, options, onChange }) {
   return (
     <div className="flex items-center gap-1.5">
-      <span className="text-[9px] tracking-widest hidden xl:inline" style={{ color: '#5a6a8a' }}>{label}</span>
+      <span className="text-[9px] tracking-widest hidden xl:inline" style={{ color: '#7c8caf' }}>{label}</span>
       <div className="flex items-center gap-1 flex-wrap" role="group" aria-label={label}>
         {options.map(opt => {
           const active = opt.value === value

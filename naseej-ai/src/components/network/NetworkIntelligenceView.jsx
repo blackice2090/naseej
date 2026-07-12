@@ -23,12 +23,12 @@ export default function NetworkIntelligenceView({ connected, onOpenCase }) {
         {/* Executive header */}
         <header className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <div className="flex items-center gap-3">
+            <div className="inline-flex items-center gap-3">
               <h1 className="text-lg font-bold tracking-[3px]" style={{ color: '#4fc3f7' }}>{NETWORK_INTEL.titleEn}</h1>
-              <span className="text-base" style={{ color: '#7c4dff', fontFamily: 'serif' }}>{NETWORK_INTEL.titleAr}</span>
+              <span className="text-base leading-relaxed" style={{ color: '#7c4dff', fontFamily: 'var(--font-arabic)' }} dir="rtl">{NETWORK_INTEL.titleAr}</span>
             </div>
             <p className="text-[11px] mt-1 max-w-2xl leading-relaxed" style={{ color: '#a8b6d8' }}>{NETWORK_INTEL.subtitle}</p>
-            <p className="text-[13px] mt-1 max-w-2xl leading-relaxed" style={{ color: '#c3b6ff', fontFamily: 'serif' }} dir="rtl">{NETWORK_INTEL.subtitleAr}</p>
+            <p className="text-[13px] mt-1 max-w-2xl leading-relaxed" style={{ color: '#c3b6ff', fontFamily: 'var(--font-arabic)' }} dir="rtl">{NETWORK_INTEL.subtitleAr}</p>
           </div>
           <div className="flex flex-col items-end gap-2">
             <div className="flex items-center gap-2">
@@ -38,7 +38,7 @@ export default function NetworkIntelligenceView({ connected, onOpenCase }) {
               </span>
               <DashboardStatusBadge connected={connected} />
             </div>
-            <span className="text-[9px] tracking-widest" style={{ color: '#5a6a8a' }}>
+            <span className="text-[9px] tracking-widest" style={{ color: '#7c8caf' }}>
               RANGE: {dashboard.range.label.toUpperCase()}
             </span>
           </div>
@@ -50,7 +50,7 @@ export default function NetworkIntelligenceView({ connected, onOpenCase }) {
             <span key={c} className="flex items-center gap-2">
               <span className="font-mono text-[9px] tracking-widest px-2 py-1 rounded"
                 style={{ color: '#a8b6d8', background: 'rgba(13,21,37,0.7)', border: '1px solid #1a2744' }}>{c}</span>
-              {i < NETWORK_INTEL.storyChips.length - 1 && <span style={{ color: '#4a5a7a' }}>→</span>}
+              {i < NETWORK_INTEL.storyChips.length - 1 && <span style={{ color: '#6a7a9e' }}>→</span>}
             </span>
           ))}
         </div>
@@ -81,7 +81,7 @@ export default function NetworkIntelligenceView({ connected, onOpenCase }) {
         {/* Privacy & governance */}
         <PrivacyGovernanceStrip governance={dashboard.governance} />
 
-        <p className="text-[9px] tracking-widest text-center pb-2" style={{ color: '#4a5a7a' }}>
+        <p className="text-[9px] tracking-widest text-center pb-2" style={{ color: '#6a7a9e' }}>
           SYNTHETIC DEMO DATA · RESEARCH PROTOTYPE · NOT PRODUCTION VALIDATION · PDPL-BY-DESIGN · SAMA-ALIGNED PROTOTYPE
         </p>
       </div>

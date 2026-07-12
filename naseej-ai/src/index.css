@@ -8,9 +8,31 @@
   padding: 0;
 }
 
+:root {
+  /* Local/system Arabic fallback stack — no remote font dependency. */
+  --font-arabic: 'Segoe UI', 'Tahoma', 'Noto Naskh Arabic', 'Geeza Pro',
+    'Arabic Typesetting', 'Traditional Arabic', serif;
+}
+
 body {
   overflow: hidden;
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* Restrained emphasis for the critical cross-bank path: a slow opacity pulse.
+   Position is never animated. Disabled under reduced-motion. */
+@keyframes ni-critical-pulse {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 1; }
+}
+.ni-critical-path {
+  animation: ni-critical-pulse 2.8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ni-critical-path {
+    animation: none;
+    opacity: 0.9;
+  }
 }
 
 /* Hide scrollbars but keep scroll behaviour */

@@ -44,7 +44,7 @@ export default function DecisionSummary({ riskStatus, criticalCount, topPattern 
         <p className="text-[11px] leading-relaxed" style={{ color: '#c0ccea' }}>
           Prioritize the critical cases for analyst review. <span style={{ color: '#e0e8ff' }}>AI recommends — a human analyst decides. No automatic production blocking.</span>
         </p>
-        <p className="text-[12px] mt-1.5 leading-relaxed" style={{ color: '#b39dff', fontFamily: 'serif' }} dir="rtl">
+        <p className="text-[12px] mt-1.5 leading-relaxed" style={{ color: '#b39dff', fontFamily: 'var(--font-arabic)' }} dir="rtl">
           {NETWORK_INTEL.decisionArabic}
         </p>
       </div>

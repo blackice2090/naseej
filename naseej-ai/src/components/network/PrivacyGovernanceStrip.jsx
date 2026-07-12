@@ -23,7 +23,7 @@ export default function PrivacyGovernanceStrip({ governance }) {
             style={{ color: '#fbbf24', border: '1px solid #fbbf2444', background: '#fbbf240d' }}>
             {NETWORK_INTEL.governanceEvidenceLabel}
           </span>
-          <span className="text-[10px]" style={{ color: '#b39dff', fontFamily: 'serif' }} dir="rtl">
+          <span className="text-[10px]" style={{ color: '#b39dff', fontFamily: 'var(--font-arabic)' }} dir="rtl">
             {NETWORK_INTEL.governanceEvidenceLabelAr}
           </span>
         </span>
@@ -38,7 +38,7 @@ export default function PrivacyGovernanceStrip({ governance }) {
         ))}
       </div>
       <p className="text-[10px] leading-relaxed mt-3" style={{ color: '#a8b6d8' }}>{NETWORK_INTEL.governanceStatement}</p>
-      <p className="text-[10px] leading-relaxed mt-1" style={{ color: '#7c4dff', fontFamily: 'serif' }} dir="rtl">
+      <p className="text-[10px] leading-relaxed mt-1" style={{ color: '#7c4dff', fontFamily: 'var(--font-arabic)' }} dir="rtl">
         {NETWORK_INTEL.governanceStatementAr}
       </p>
     </Panel>
