@@ -137,6 +137,63 @@ export const MOCK_CASES = [
   },
 ]
 
+// ── Network Intelligence dashboard → Investigator adapter ────────────────────
+// Maps a synthetic Priority-Queue row (NSJ-1042 …) onto the exact case shape
+// the Investigator view expects, so clicking a dashboard case opens it there
+// with full detail. It reuses the existing mock case structure — no duplicate
+// case system. The case_id is deterministic (dedupe on repeat clicks) and the
+// evidence line is explicitly labelled synthetic so it can't be mistaken for a
+// backend case. Owned by the mock identity (Bank A) so it is viewable offline.
+
+const DASH_TYPOLOGY = {
+  'Fan-in': 'fan_in',
+  'Gather-Scatter': 'gather_scatter',
+  Cycle: 'simple_cycle',
+}
+const DASH_TIER = { Critical: 'critical', High: 'high', Medium: 'medium' }
+const DASH_ACTION = {
+  'Review Now': 'freeze_for_review',
+  Escalate: 'escalate_to_compliance',
+  'Analyst Review': 'request_step_up_verification',
+  Monitor: 'monitor',
+  Observe: 'monitor',
+}
+
+export function dashboardCaseId(dashCase) {
+  return `dashboard-${dashCase.id}`
+}
+
+export function buildDashboardCase(dashCase) {
+  const now = new Date().toISOString()
+  return {
+    case_id: dashboardCaseId(dashCase),
+    pattern_id: `dashboard-pattern-${dashCase.id}`,
+    pattern_hash: `NSJ_${(dashCase.patternTag || 'velocity_anomaly').toUpperCase().replace(/[^A-Z]/g, '_')}_synthetic`,
+    typology: DASH_TYPOLOGY[dashCase.patternTag] || 'mule_velocity',
+    risk_tier: DASH_TIER[dashCase.status] || 'medium',
+    risk_score: dashCase.risk,
+    confidence: dashCase.risk,
+    source_node_id: 'NODE_A7C2F9E1',
+    owner_node_id: 'NODE_A7C2F9E1',
+    visible_to_node_ids: ['NODE_A7C2F9E1'],
+    sharing_scope: dashCase.crossBank ? 'network_all' : 'local_only',
+    status: 'open',
+    recommended_action: DASH_ACTION[dashCase.action] || 'monitor',
+    created_at: now,
+    updated_at: now,
+    assigned_to: null,
+    evidence_summary:
+      `[SYNTHETIC DASHBOARD CASE — illustrative, not a backend case] ${dashCase.bank} · ${dashCase.pattern} pattern` +
+      `${dashCase.crossBank ? ' with a confirmed cross-bank match' : ' (local detection only)'}. ` +
+      'Bucketed, zero-PII synthetic evidence for demonstration of the analyst hand-off.',
+    analyst_notes: [],
+    decision_history: [],
+    false_positive_flag: false,
+    audit_refs: [],
+    synthetic_dashboard: true,
+  }
+}
+
 // Locally-built case used when the demo's BLOCKED stage fires while the
 // backend is offline — keeps the demo → investigator story intact.
 export function buildLocalDemoCase() {

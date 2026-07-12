@@ -25,6 +25,7 @@ import BankBPanel from './components/panels/BankBPanel'
 import ControlBar from './components/panels/ControlBar'
 import BroadcastPulse from './components/graph/BroadcastPulse'
 import InvestigatorView from './components/investigator/InvestigatorView'
+import NetworkIntelligenceView from './components/network/NetworkIntelligenceView'
 
 export default function App() {
   const [view, setView] = useState('demo')
@@ -33,7 +34,8 @@ export default function App() {
     liveScore, livePattern, liveContextScore, liveShadowScore, run, reset,
   } = useSimulation()
   const { connected, metrics, crossBank, contextLive, evidence, candidate, monitoring, governance } = useBackendData()
-  const { cases, identity, usingMock, openCount, decide, addNote, ingestDemoDetection } = useCases()
+  const { cases, identity, usingMock, openCount, decide, addNote, ingestDemoDetection, openDashboardCase } = useCases()
+  const [focusCase, setFocusCase] = useState(null)
 
   // Demo → case bridge: one case per simulation run, created when the
   // block fires. Guarded by a ref so re-renders cannot duplicate it.
@@ -53,7 +55,19 @@ export default function App() {
     >
       <TopNav view={view} onViewChange={setView} openCaseCount={openCount} />
 
-      {view === 'demo' ? (
+      {view === 'network' ? (
+        // Network Intelligence: synthetic, deterministic dashboard. Clicking a
+        // priority case hands off to the existing Investigator flow. Simulation
+        // state lives in App, so switching tabs preserves the demo run.
+        <NetworkIntelligenceView
+          connected={connected}
+          onOpenCase={(dashCase) => {
+            const id = openDashboardCase(dashCase)
+            setFocusCase({ id, nonce: Date.now() })
+            setView('investigator')
+          }}
+        />
+      ) : view === 'demo' ? (
         <>
           <MLValidationCard metrics={metrics} />
 
@@ -96,6 +110,7 @@ export default function App() {
           onDecide={decide}
           onAddNote={addNote}
           identity={identity}
+          focusCaseId={focusCase}
         />
       )}
     </div>

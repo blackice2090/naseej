@@ -13,7 +13,7 @@ import {
   fetchCases, fetchWhoami, registerPattern, createCaseFromPattern,
   postCaseDecision, addCaseNote, feedbackFromCase,
 } from '../lib/api'
-import { MOCK_CASES, buildLocalDemoCase } from '../data/mockCases'
+import { MOCK_CASES, buildLocalDemoCase, buildDashboardCase, dashboardCaseId } from '../data/mockCases'
 import { buildDemoPattern } from '../data/demoPattern'
 import {
   DECISIONS, TRANSITIONS, MOCK_IDENTITY, canDecide, canAddNote, mockPiiCheck,
@@ -134,7 +134,16 @@ export function useCases() {
     setUsingMock(prev => prev || !livePattern?.pattern_hash)
   }, [refresh])
 
+  // Network Intelligence hand-off: ensure a synthetic dashboard case exists in
+  // the queue (idempotent) and return its id so the Investigator view can
+  // select it. Reuses the existing case list/state — no separate case system.
+  const openDashboardCase = useCallback((dashCase) => {
+    const id = dashboardCaseId(dashCase)
+    setCases(prev => (prev.some(c => c.case_id === id) ? prev : [buildDashboardCase(dashCase), ...prev]))
+    return id
+  }, [])
+
   const openCount = cases.filter(c => !c.status.startsWith('closed')).length
 
-  return { cases, identity, usingMock, openCount, refresh, decide, addNote, ingestDemoDetection }
+  return { cases, identity, usingMock, openCount, refresh, decide, addNote, ingestDemoDetection, openDashboardCase }
 }

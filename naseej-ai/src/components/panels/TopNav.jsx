@@ -1,8 +1,9 @@
-import { Shield, Activity, Users } from 'lucide-react'
-import { BRAND, NETWORK_STATUS } from '../../config/copy'
+import { Shield, Activity, Users, Network } from 'lucide-react'
+import { BRAND, NETWORK_STATUS, NETWORK_STATUS_INTEL } from '../../config/copy'
 
 const VIEWS = [
   { id: 'demo', label: 'DEMO', icon: Activity },
+  { id: 'network', label: 'NETWORK INTELLIGENCE', icon: Network },
   { id: 'investigator', label: 'INVESTIGATOR', icon: Users },
 ]
 
@@ -76,7 +77,7 @@ export default function TopNav({ view, onViewChange, openCaseCount = 0 }) {
             style={{ background: '#00e676', boxShadow: '0 0 6px #00e676' }}
           />
           <span className="text-[9px] tracking-widest" style={{ color: '#00e676' }}>
-            {NETWORK_STATUS}
+            {view === 'network' ? NETWORK_STATUS_INTEL : NETWORK_STATUS}
           </span>
         </div>
       </div>

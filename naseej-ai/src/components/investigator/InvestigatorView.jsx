@@ -7,7 +7,7 @@ import { STATUS_META } from '../../config/investigator'
 // Analyst workspace: risk queue on the left, case detail on the right.
 // Receives case state from useCases (owned by App so the demo can ingest
 // detections regardless of which view is showing).
-export default function InvestigatorView({ cases, usingMock, onDecide, onAddNote, identity }) {
+export default function InvestigatorView({ cases, usingMock, onDecide, onAddNote, identity, focusCaseId }) {
   const [selectedId, setSelectedId] = useState(null)
   const selected = cases.find(c => c.case_id === selectedId) || null
 
@@ -15,6 +15,13 @@ export default function InvestigatorView({ cases, usingMock, onDecide, onAddNote
   useEffect(() => {
     if (!selectedId && cases.length > 0) setSelectedId(cases[0].case_id)
   }, [cases, selectedId])
+
+  // Hand-off from the Network Intelligence priority queue: select the exact
+  // case that was clicked. `focusCaseId` carries a nonce so re-clicking the
+  // same case re-focuses it.
+  useEffect(() => {
+    if (focusCaseId?.id) setSelectedId(focusCaseId.id)
+  }, [focusCaseId])
 
   const counts = cases.reduce((acc, c) => {
     acc[c.status] = (acc[c.status] || 0) + 1
